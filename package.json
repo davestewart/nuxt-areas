@@ -1,0 +1,29 @@
+{
+  "name": "nuxt-areas",
+  "version": "1.0.0",
+  "description": "Scalable folder management for large Nuxt projects",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davestewart/nuxt-areas.git"
+  },
+  "keywords": [
+    "nuxt",
+    "enterprise",
+    "plugin",
+    "module"
+  ],
+  "author": "Dave Stewart",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davestewart/nuxt-areas/issues"
+  },
+  "homepage": "https://github.com/davestewart/nuxt-areas#readme",
+  "dependencies": {
+    "glob": "^7.2.0",
+    "path-sort": "^0.1.0"
+  }
+}
