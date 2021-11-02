@@ -1,0 +1,80 @@
+[
+  {
+    "path": "/debug",
+    "component": "() => interopDefault(import('/pages/debug.vue'))"
+  },
+  {
+    "path": "/lists",
+    "component": "() => interopDefault(import('/pages/lists.vue'))",
+    "children": [
+      {
+        "path": "",
+        "component": "() => interopDefault(import('/pages/lists/index.vue'))"
+      },
+      {
+        "path": "journalists",
+        "component": "() => interopDefault(import('/pages/lists/journalists.vue'))"
+      }
+    ]
+  },
+  {
+    "path": "/mentions",
+    "component": "() => interopDefault(import('/pages/mentions.vue'))",
+    "children": [
+      {
+        "path": "",
+        "component": "() => interopDefault(import('/pages/mentions/index.vue'))"
+      },
+      {
+        "path": "search",
+        "component": "() => interopDefault(import('/pages/mentions/search.vue'))"
+      },
+      {
+        "path": "view",
+        "component": "() => interopDefault(import('/pages/mentions/view.vue'))"
+      }
+    ]
+  },
+  {
+    "path": "/news",
+    "component": "() => interopDefault(import('/pages/news.vue'))",
+    "children": [
+      {
+        "path": "",
+        "component": "() => interopDefault(import('/pages/news/index.vue'))"
+      },
+      {
+        "path": "report",
+        "component": "() => interopDefault(import('/pages/news/report.vue'))"
+      },
+      {
+        "path": "search",
+        "component": "() => interopDefault(import('/pages/news/search.vue'))"
+      }
+    ]
+  },
+  {
+    "path": "/test",
+    "component": "() => interopDefault(import('/pages/test.vue'))"
+  },
+  {
+    "path": "/archive/companies",
+    "component": "() => interopDefault(import('/pages/archive/companies.vue'))"
+  },
+  {
+    "path": "/archive/executives",
+    "component": "() => interopDefault(import('/pages/archive/executives.vue'))"
+  },
+  {
+    "path": "/archive/fast-search",
+    "component": "() => interopDefault(import('/pages/archive/fast-search.vue'))"
+  },
+  {
+    "path": "/",
+    "component": "() => interopDefault(import('/pages/index.vue'))"
+  },
+  {
+    "path": "/mentions/view/:id",
+    "component": "() => interopDefault(import('/pages/mentions/view.vue'))"
+  }
+]

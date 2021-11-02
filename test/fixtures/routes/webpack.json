@@ -1,0 +1,80 @@
+[
+  {
+    "path": "/debug",
+    "component": "function _d29fffd2() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/debug */ \"pages/debug\").then(__webpack_require__.bind(null, /*! ../pages/debug.vue */ \"./pages/debug.vue\")));\n}"
+  },
+  {
+    "path": "/lists",
+    "component": "function _5a965c59() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/lists */ \"pages/lists\").then(__webpack_require__.bind(null, /*! ../pages/lists.vue */ \"./pages/lists.vue\")));\n}",
+    "children": [
+      {
+        "path": "",
+        "component": "function _718f07c8() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/lists/index */ \"pages/lists/index\").then(__webpack_require__.bind(null, /*! ../pages/lists/index.vue */ \"./pages/lists/index.vue\")));\n}"
+      },
+      {
+        "path": "journalists",
+        "component": "function _22f8c3aa() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/lists/journalists */ \"pages/lists/journalists\").then(__webpack_require__.bind(null, /*! ../pages/lists/journalists.vue */ \"./pages/lists/journalists.vue\")));\n}"
+      }
+    ]
+  },
+  {
+    "path": "/mentions",
+    "component": "function _00235db5() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/mentions */ \"pages/mentions\").then(__webpack_require__.bind(null, /*! ../pages/mentions.vue */ \"./pages/mentions.vue\")));\n}",
+    "children": [
+      {
+        "path": "",
+        "component": "function _37fe0878() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/mentions/index */ \"pages/mentions/index\").then(__webpack_require__.bind(null, /*! ../pages/mentions/index.vue */ \"./pages/mentions/index.vue\")));\n}"
+      },
+      {
+        "path": "search",
+        "component": "function _7381dff2() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/mentions/search */ \"pages/mentions/search\").then(__webpack_require__.bind(null, /*! ../pages/mentions/search.vue */ \"./pages/mentions/search.vue\")));\n}"
+      },
+      {
+        "path": "view",
+        "component": "function _b52d9a22() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/mentions/view */ \"pages/mentions/view\").then(__webpack_require__.bind(null, /*! ../pages/mentions/view.vue */ \"./pages/mentions/view.vue\")));\n}"
+      }
+    ]
+  },
+  {
+    "path": "/news",
+    "component": "function _26c4bdbf() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/news */ \"pages/news\").then(__webpack_require__.bind(null, /*! ../pages/news.vue */ \"./pages/news.vue\")));\n}",
+    "children": [
+      {
+        "path": "",
+        "component": "function _edd48dfc() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/news/index */ \"pages/news/index\").then(__webpack_require__.bind(null, /*! ../pages/news/index.vue */ \"./pages/news/index.vue\")));\n}"
+      },
+      {
+        "path": "report",
+        "component": "function _3a50eb98() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(Promise.all(/*! import() | pages/news/report */[__webpack_require__.e(\"vendors/pages/news/report\"), __webpack_require__.e(\"pages/news/report\")]).then(__webpack_require__.bind(null, /*! ../pages/news/report.vue */ \"./pages/news/report.vue\")));\n}"
+      },
+      {
+        "path": "search",
+        "component": "function _456040a8() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(Promise.all(/*! import() | pages/news/search */[__webpack_require__.e(\"vendors/pages/news/search\"), __webpack_require__.e(\"pages/news/search\")]).then(__webpack_require__.bind(null, /*! ../pages/news/search.vue */ \"./pages/news/search.vue\")));\n}"
+      }
+    ]
+  },
+  {
+    "path": "/test",
+    "component": "function _e1730004() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/test */ \"pages/test\").then(__webpack_require__.bind(null, /*! ../pages/test.vue */ \"./pages/test.vue\")));\n}"
+  },
+  {
+    "path": "/archive/companies",
+    "component": "function _38ac0f12() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/archive/companies */ \"pages/archive/companies\").then(__webpack_require__.bind(null, /*! ../pages/archive/companies.vue */ \"./pages/archive/companies.vue\")));\n}"
+  },
+  {
+    "path": "/archive/executives",
+    "component": "function _346b8a64() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/archive/executives */ \"pages/archive/executives\").then(__webpack_require__.bind(null, /*! ../pages/archive/executives.vue */ \"./pages/archive/executives.vue\")));\n}"
+  },
+  {
+    "path": "/archive/fast-search",
+    "component": "function _3b8f4aa0() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/archive/fast-search */ \"pages/archive/fast-search\").then(__webpack_require__.bind(null, /*! ../pages/archive/fast-search.vue */ \"./pages/archive/fast-search.vue\")));\n}"
+  },
+  {
+    "path": "/",
+    "component": "function _725f3b16() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() | pages/index */ \"pages/index\").then(__webpack_require__.bind(null, /*! ../pages/index.vue */ \"./pages/index.vue\")));\n}"
+  },
+  {
+    "path": "/mentions/view/:id",
+    "component": "function _045643d7() {\n  return Object(_utils__WEBPACK_IMPORTED_MODULE_13__[\"interopDefault\"])(__webpack_require__.e(/*! import() */ \"pages/mentions/view\").then(__webpack_require__.bind(null, /*! ../pages/mentions/view */ \"./pages/mentions/view.vue\")));\n}"
+  }
+]
