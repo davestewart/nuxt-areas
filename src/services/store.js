@@ -1,6 +1,6 @@
 import pathSort from 'path-sort'
 import glob from 'glob'
-import { sortBy } from './utils.js'
+import { sortBy } from '../helpers/utils.js'
 
 /**
  * @param   {string}    BASE_PATH    The base areas path (normally "areas")

@@ -1,6 +1,6 @@
 import { extname, isAbsolute, resolve } from 'path'
 import { existsSync, readdirSync } from 'fs'
-import { tryFile } from './utils.js'
+import { tryFile } from '../helpers/utils.js'
 
 /**
  * Route definition

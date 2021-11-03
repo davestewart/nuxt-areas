@@ -1,10 +1,10 @@
 import { resolve } from 'path'
-import { getRoutes } from './helpers/routes.js'
-import { getStores } from './helpers/store.js'
+import { name, version } from '../package.json'
+import { getRoutes } from './services/routes.js'
+import { getStores } from './services/store.js'
 
-export const meta = require('../package.json')
+const nuxtModule = function (options) {
 
-export default function (options) {
   // ---------------------------------------------------------------------------------------------------------------------
   // dev
   // ---------------------------------------------------------------------------------------------------------------------
@@ -87,6 +87,8 @@ export default function (options) {
       stores,
     },
   })
-
 }
 
+nuxtModule.meta = { name, version }
+
+export default nuxtModule
