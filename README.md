@@ -159,11 +159,26 @@ You can import the Product model directly from the store:
 import Product from './classes/Product.js'
 ````
 
-If you're:
+If you're creating a new area, simply add folders and files and your application should just run.
 
-- happy with the standard Nuxt approach, add any folders you need and your application should just run
+If you're migrating an existing site, ensure you rename pages and stores so routes and namespaces work correctly:
 
-- migrating an existing site, you *may* need to read on to customise routes or namespaces
+```bash
+# from
+/pages/users.vue
+
+# to
+/areas/users/pages/index.vue
+```
+
+ ```bash
+ # from
+ /store/users.js
+ 
+ # to
+ /areas/users/store.js
+ /areas/users/store/index.js # alternative
+ ```
 
 ### Configure custom routing using JavaScript
 
@@ -414,3 +429,4 @@ Nuxt Areas is still prerelease, so I'm looking to get feedback and squish any bu
 Please do jump in and test, and let me know what doens't work in the [issues](https://github.com/davestewart/nuxt-areas/issues).
 
 Thanks!
+
