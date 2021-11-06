@@ -4,7 +4,7 @@
 
 ## Abstract
 
-In general, most web application frameworks ship with a folder structure based on responsibility.
+In general, most web application frameworks ship with a folder structure based around *responsibility*.
 
 This results in related files (i.e. products) being "striped" across the application:
 
@@ -105,7 +105,7 @@ Next, add a new root-level folder named `areas`:
 
 ## Usage
 
-### Add or move content new areas subfolders
+### Add or move content to new areas subfolders
 
 To get started, you're going to create or move content to subfolders of `areas`.
 
@@ -113,9 +113,9 @@ Remember, all `areas` sub folders follow the same routing and namespacing rules 
 
 The Areas module will:
 
-- build prefixed routes from `pages`
-- register namespaced stores from `store` or `store.js`
-- register components in `components`
+- build prefixed routes from `pages/*`
+- register namespaced stores from `store/*` or `store.js`
+- register components in `components/*`
 - read any `area.config.js` and customise routes or stores based on the exports 
 - ignore other folders (but you can add them and import locally, for example `classes` or `data`)
 
@@ -131,7 +131,7 @@ Let's pretend we're adding a products area:
         +- pages
         |   +- index.vue
         |   +- _id.vue
-        +- store.js                     <-- store can be a file or folder; namespacing will be determined automatically
+        +- store.js              <-- store can be a file or folder; namespacing will be determined automatically
 ```
 
 The following components will be automatically registered:
@@ -161,29 +161,29 @@ import Product from './classes/Product.js'
 
 If you're:
 
-- happy with the standard Nuxt approach, add as many folders as you need and your application should just run
+- happy with the standard Nuxt approach, add any folders you need and your application should just run
 
 - migrating an existing site, you *may* need to read on to customise routes or namespaces
 
 ### Configure custom routing using JavaScript
 
-If you want to break out of filesystem based routing, for example, a more intuitive CRID setup, you can add an `area.config.js` (or `.ts`) file:
+If you want to break out of filesystem based routing, for example, a more intuitive CRUD setup, you can add an `area.config.js` (or `.ts`) file:
 
 ```
 +- areas
     +- products
        +- pages
        |   +- index.vue
-       |   +- edit.vue                  <-- edit can be used for edit and create
+       |   +- edit.vue           <-- edit can be used for edit and create
        |   +- view.vue
-       +- area.config.js                <-- config file export overrides filesystem routing
+       +- area.config.js         <-- config file export overrides filesystem routing
 ```
 
 The file should export **area-relative** routes defining `path`, `component` and optionally `children`:
 
 ````ts
 export const routes = [
-    { path: string, component: string, children: route[] }
+  { path: string, component: string, children: route[] }
 ]
 ````
 
@@ -202,15 +202,15 @@ export const routes = [
 ]
 ```
 
-See the [Config](#config) section for more information.
+See the [Areas config](#areas-config) section for more information.
 
 ### Modify route prefixes and store namespaces
 
 #### Routes
 
-There may be times when you need a common route, or just want to structurally group areas without adding a route.
+There may be times when you want to group or even ungroup area routes.
 
-You can nest areas under subfolders, as long as you provide a config file which exports a `path` constant:
+You can nest areas under subfolders if you provide a config file which exports a `path` constant:
 
 ```
 +- areas
@@ -227,7 +227,7 @@ You can nest areas under subfolders, as long as you provide a config file which 
 The config file should look like this:
 
 ```ts
-export const path = 'products'
+export const path = 'products' // or whatever route you want
 ```
 
 The final routes will be:
@@ -252,11 +252,10 @@ The final routes will be:
 
 #### Stores
 
-To change the namespacing of stores, export a `namespace` constant from the store itself:
+To change the namespacing of stores, export a `namespace` constant from the **store** file:
 
 ```js
-// /areas/products/clothes/store.js
-
+// areas/products/clothes/store.js
 export const namespace = 'clothes'
 ```
 
@@ -266,11 +265,11 @@ The store will be accessible at:
 $store.state.clothes
 ```
 
-### Move all application content to areas
+### Move Nuxt application content to areas
 
-By design, Areas namespaces all areas folders with a prefixed route and store.
+By design, Areas namespaces areas folders with a prefixed route and store.
 
-However, it reserves a special folder `app` where you can move root-level `layouts`, `pages`, and `store` folders to simplify your main Nuxt app: 
+However, it reserves a special `app`  folder where you can move root-level `layouts`, `pages`, and `store` folders to simplify your main Nuxt app: 
 
 ```
 +- src
@@ -288,7 +287,7 @@ However, it reserves a special folder `app` where you can move root-level `layou
 
 If Areas detects `components` , `layouts`, `pages`, or `store`  folders within `app` it will reconfigure Nuxt using the [options.dir](https://nuxtjs.org/docs/configuration-glossary/configuration-dir) configuration.
 
-To test this out, move these folders under `areas/app`, restart the server, and observe everything working as it was before.
+To try this out, move these folders under `areas/app`, restart the server, and observe everything working as it was before.
 
 ## Configuration
 
@@ -314,7 +313,7 @@ Areas enables you to configure individual areas on a per-folder basis.
 
 #### Location
 
-Add a new file to any area you want to configure:
+Add a new  `area.config.js` file to the area or folder you want to configure:
 
 ```
 +- src
@@ -326,13 +325,11 @@ Add a new file to any area you want to configure:
             +- area.config.js (or .ts)
 ```
 
-From the `area.config.js` file, you will export constants that Areas will read.
-
 #### Routes
 
-Configuring routes is mainly useful when you want to break out of Nuxt's filesystem routing. 
+You can configure routes if you want to break out of Nuxt's filesystem routing. 
 
-You should export a single `routes` constant:
+Export a single `routes` constant, specifying the routes:
 
 ```js
 export const routes = [
@@ -349,13 +346,13 @@ export const routes = [
 ]
 ```
 
-This works exactly the same way Vue Router, so:
+This works exactly the same way as Nuxt's Vue Router usage, so:
 
 - `routes` must be array of `route`s
 - each `route` should contain `path`, `component`, and optionally `children` properties
 - root-level `path`s must **must** start with a leading slash
 - `component` **must** be an **area-relative** string path
-- Areas will **not** prefix the route with the area (so include or omit, as appropriate)
+- Areas will **not** prefix the route with the area folder path (so include or omit, as required)
 
 If you want to simplify the setup, you can import and use the Areas `page()` or `route()` helper:
 
@@ -409,3 +406,11 @@ If you move any of the following root-level folders to `areas/app`  then Areas w
 - `store`
 
 You may need to restart the server, but your app will run as usual.
+
+## Issues
+
+Nuxt Areas is still prerelease, so I'm looking to get feedback and squish any bugs before final release.
+
+Please do jump in and test, and let me know what doens't work in the [issues](https://github.com/davestewart/nuxt-areas/issues).
+
+Thanks!
