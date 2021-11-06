@@ -76,10 +76,6 @@ To see what a working Nuxt Areas site look like, you can download and run the fo
 
 - https://github.com/davestewart/nuxt-areas-demo
 
-If you want to check it out online, go to:
-
-- https://codesandbox.io/s/nuxt-areas-demo-eovs8
-
 The demo covers all the use cases listed below.
 
 ## Setup
