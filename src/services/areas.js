@@ -97,10 +97,10 @@ export function getArea (path, route = '/', namespace = '/') {
     const config = getConfig(configPath) || {}
 
     // variables
-    if (config.namespace) {
+    if ('namespace' in config) {
       namespace = resolve(namespace, '../', config.namespace)
     }
-    if (config.route) {
+    if ('route' in config) {
       route = resolve(route, '../', config.route)
     }
   }
