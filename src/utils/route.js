@@ -4,16 +4,16 @@ import glob from 'glob'
 /**
  * Create a route name "foo-bar-baz" from multiple strings
  *
- * @param   {string[]}  parts
+ * @param   {...string[]}  parts
  * @return  {string}
  */
 export function makeName (...parts) {
   return parts
     .join('-')
     .toLowerCase()
-    .replace(/:\w+$/g, '/view')
-    .replace(/:\w+/g, '')
-    .replace(/[/-]+/g, '-')
+    // .replace(/:\w+$/g, '/view')
+    // .replace(/:\w+/g, '')
+    .replace(/[/:-]+/g, '-')
     .replace(/(^-+|-+$)/g, '')
 }
 

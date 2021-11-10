@@ -1,8 +1,8 @@
-import { createRoutes, sortRoutes } from '@nuxt/utils'
+import * as NuxtUtils from '@nuxt/utils'
 import { isAbsolute, resolve } from 'path'
 import { existsSync } from 'fs'
-import { getFolders, tryFile } from '../utils/fs.js'
-import { cleanRoutes, makeName, prefixRoutes, resolveFiles } from '../utils/route.js'
+import { cleanRoutes, prefixRoutes, resolveFiles, makeName } from '../utils/route.js'
+import { getAliasedPath, tryFile } from '../utils/fs.js'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // definitions
@@ -29,16 +29,17 @@ class Route {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// main functions
+// functions
 // ---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Build routes using Nuxt's own createRoutes() utility
- * @param srcDir
- * @param options
- * @return {*}
+ * Create routes using Nuxt's own createRoutes() utility
+ *
+ * @param   {string}    srcDir    The source folder to scan for pages
+ * @param   {object}    options   Nuxt's options
+ * @return  {Route[]}             An array of Route definitions
  */
-function buildRoutes (srcDir, options) {
+function createRoutes (srcDir, options) {
   // @see https://github.com/nuxt/nuxt.js/blob/dev/packages/builder/src/builder.js#L43
   const supportedExtensions = ['vue', 'js', ...(options.build.additionalExtensions || [])]
 
@@ -55,7 +56,7 @@ function buildRoutes (srcDir, options) {
 
   // payload
   const { routeNameSplitter, trailingSlash } = options.router
-  return createRoutes({
+  return NuxtUtils.createRoutes({
     files: Object.values(files),
     srcDir,
     pagesDir: 'pages',
@@ -76,11 +77,6 @@ function buildRoutes (srcDir, options) {
 function checkRoutes (routes, srcDir, routePrefix = '') {
   // process routes
   routes.forEach(route => {
-    // ensure component has extension
-    if (!route.component.endsWith('.vue')) {
-      route.component += '.vue'
-    }
-
     // check for absolute path
     if (!isAbsolute(route.component)) {
       route.component = resolve(srcDir, route.component)
@@ -92,13 +88,21 @@ function checkRoutes (routes, srcDir, routePrefix = '') {
       }
     }
 
+
+    // reset component to project
+    route.component = getAliasedPath(route.component)
+
+    // make sure route has chunk name
+    route.chunkName = route.component
+      .replace(/^~\//, '')
+      .replace(resolve('.') + '/', '')
+      .replace(/\.\w+$/, '')
+      .replace(/-/g, '/')
+
     // make sure route has name
     if (!route.name) {
       route.name = makeName(routePrefix, route.path)
     }
-
-    // make sure route has chunk name
-    route.chunkName = 'areas/' + makeName(routePrefix, route.path).replace(/-/g, '/')
 
     // process children
     if (route.children && Array.isArray(route.children)) {
@@ -116,78 +120,60 @@ function checkRoutes (routes, srcDir, routePrefix = '') {
 }
 
 /**
- * Gets or generates routes for all areas sub-folders
+ * Gets or generates routes for passed areas
  *
- * - if a routes file exists, it is processed
+ * - if an area config file exists, it is processed
  * - if one doesn't exist, the folders are scanned
  *
- * @param   {string}    BASE_PATH    The base areas path (normally "areas")
- * @param   {string}    APP_PATH     The app folder path (normally "areas/app")
+ * @param   {Area[]}    areas         An array of areas to process
  * @param   {object}    nuxtOptions   Nuxt's options
  * @return  {Route[]}
  */
-export function getRoutes (BASE_PATH, APP_PATH, nuxtOptions) {
-  // get base directories
-  const areasPath = resolve(BASE_PATH)
-  const appPath = resolve(APP_PATH)
-  if (!existsSync(areasPath)) {
-    return []
-  }
-
-  // get folders
-  const folders = getFolders(areasPath)
+export function getRoutes (areas, nuxtOptions, depth = 0) {
+  // all route definitions
+  const allRoutes = []
 
   // process folders
-  const allRoutes = []
-  for (const folder of folders) {
-    // full path
-    const modulePath = resolve(areasPath, folder)
-
-    // skip app path
-    if (modulePath === appPath) {
-      continue
-    }
-
-    // check for routes configuration file
-    const file = tryFile(modulePath, ['area.config.js', 'area.config.ts'])
-
+  for (const area of areas) {
     // variables
-    let routes
+    const { name, route, path } = area
+    const prefix = route
+    let routes = []
 
-    // attempt to get configuration file
-    if (existsSync(file)) {
-      // get initial data
-      const data = require(file)
-
-      // test for a route
-      try {
-        routes = data.routes
-      }
-      catch (err) {
-        console.warn(`There was a problem reading area config "${file}". The error is: ${err.message}`)
-      }
-
-      // if areas, rescan this folder for sub-areas
-      if (data.areas || 'path' in data) {
-        routes = getRoutes(modulePath, APP_PATH, nuxtOptions)
-        routes = prefixRoutes(routes, data.path || '')
-      }
+    // CHILD AREAS
+    if (area.areas) {
+      routes = getRoutes(area.areas, nuxtOptions, depth + 1)
     }
 
-    // otherwise generate routes from folder
+    // SINGLE AREA
     else {
-      routes = buildRoutes(modulePath, nuxtOptions)
-      routes = prefixRoutes(routes, folder)
-      cleanRoutes(routes)
+      // check for config file
+      const configPath = tryFile(path, ['routes.js', 'routes.ts'])
+
+      // routes are configured
+      if (configPath) {
+        const config = require(configPath)
+        routes = config.routes
+        routes = prefixRoutes(routes, prefix)
+      }
+
+      // otherwise, build them
+      else {
+        routes = createRoutes(path, nuxtOptions)
+        routes = prefixRoutes(routes, prefix)
+        cleanRoutes(routes)
+      }
+
+      // if we have routes, check and add them
+      routes = checkRoutes(routes, path)
     }
 
-    // add routes
     if (Array.isArray(routes)) {
-      routes = checkRoutes(routes, modulePath)
+      // routes = NuxtUtils.sortRoutes(routes)
       allRoutes.push(...routes)
     }
   }
 
   // return
-  return sortRoutes(allRoutes)
+  return NuxtUtils.sortRoutes(allRoutes)
 }

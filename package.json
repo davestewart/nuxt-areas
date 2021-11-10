@@ -26,5 +26,9 @@
     "@nuxt/utils": "^2.15.8",
     "glob": "^7.2.0",
     "path-sort": "^0.1.0"
-  }
+  },
+  "peerDependencies": {
+    "nuxt": "^2.9.0"
+  },
+  "devDependencies": {}
 }

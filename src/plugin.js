@@ -1,24 +1,20 @@
 // imports
 <% options.stores.forEach(function(store) {
-%>import * as <%= store.ref %> from '~/<%= store.path %>'
+%>import * as <%= store.ref %> from '<%= store.path %>'
 <%
 }); %>
 
 // plugin function
 export default async function ({ store }) {
   <% options.stores.forEach(function(store) {
-  %>registerModule(store, <%= JSON.stringify(store.namespace) %>, <%= store.ref %>)
+  %>registerModule(store, '<%= store.namespace || "" %>', <%= store.ref %>)
   <% }); %>
 }
 
 // helper function
 function registerModule (store, namespace, module) {
-  // check module namespace
-  if (module.namespace) {
-    namespace = Array.isArray(module.namespace)
-      ? module.namespace
-      : module.namespace.split(/[/.]/)
-  }
+  // split
+  namespace = namespace.split('/')
 
   // ensure parent namespaces have been registered
   if (namespace.length > 1) {
