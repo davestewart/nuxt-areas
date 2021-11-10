@@ -27,6 +27,7 @@ function registerModule (store, namespace, module) {
   }
 
   // register module
+  // also @see https://github.com/nuxt/nuxt.js/issues/2267
   store.registerModule(namespace, {
     namespaced: true,
     modules: {},

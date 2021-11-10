@@ -35,11 +35,6 @@ const nuxtModule = function (options) {
     nuxt: {}
   }
 
-  // watch
-  const watch = [
-    __dirname + '/**', // this package
-  ]
-
   // ---------------------------------------------------------------------------------------------------------------------
   // areas
   // ---------------------------------------------------------------------------------------------------------------------
@@ -58,11 +53,28 @@ const nuxtModule = function (options) {
     })
   }
 
-  // add any config files to watch
-  watch.push(...getAreasConfigFiles(areas))
-
   // debug
   debug.areas = areas
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // watch
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  // @see https://nuxtjs.org/docs/configuration-glossary/configuration-watch#the-watch-property
+  if (this.options.dev) {
+    // watch
+    const watch = [
+      __dirname + '/**', // this package
+    ]
+
+    // add any config files to watch
+    watch.push(...getAreasConfigFiles(areas))
+
+    this.options.watch.push(...watch)
+
+    // debug
+    debug.watch = watch
+  }
 
   // ---------------------------------------------------------------------------------------------------------------------
   // folders + aliases
@@ -189,18 +201,6 @@ const nuxtModule = function (options) {
 
     // debug
     debug.stores = stores
-  }
-
-  // ---------------------------------------------------------------------------------------------------------------------
-  // watch
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // @see https://nuxtjs.org/docs/configuration-glossary/configuration-watch#the-watch-property
-  if (this.options.dev) {
-    this.options.watch.push(...watch)
-
-    // debug
-    debug.watch = watch
   }
 
   // ---------------------------------------------------------------------------------------------------------------------

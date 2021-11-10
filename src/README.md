@@ -1,6 +1,6 @@
 # Nuxt Areas
 
-> How this module works
+> How Nuxt Areas works
 
 ## Overview
 
@@ -12,10 +12,10 @@ The module has several main parts:
 - **plugin**: a template file which is added to the final site build
 - **services**: the heavy lifting for the tasks run by the module 
 
-As Nuxt builds:
+A rough overview to the build process:
 
-- the [module](#the-module) is called and passed options found in `nuxt.conf.js`
-- the module's code calls the various [services](#the-services) and updates Nuxt's configuration
+- the [module](#the-module) is called with options from `nuxt.conf.js`
+- the module's calls various [services](#the-services) and updates Nuxt's configuration
 - the [plugin](#the-plugin) is generated and copied into the build
 
 When the site runs, the individual routes, stores and components found in the discovered areas will be included in the site as if it was built using standard folders.
@@ -28,26 +28,35 @@ The [module](./module.js) part of Nuxt Areas is a Nuxt [Module](https://nuxtjs.o
 
 ### What it does
 
-For Nuxt Areas, this runs a series of tasks which collate the files from the various areas, add them to the Nuxt build, and updated code Nuxt configuration.
+The module works through a set of tasks which are grouped and ordered as follows:
 
-The tasks run in order are as follows:
+Preparation:
 
 - **Options**:<br>
   Compiles options and paths needed for the upcoming tasks
 - **Areas**:<br>
-  Calls the [Areas Service](#areas-service) to generate a nested array of information about all areas
+  Calls the [Areas Service](#areas-service) to build a tree of information about all the areas
+
+Configuration:
+
+- **Watch**:<br>
+  Updates Nuxt's `options.watch` config with the paths of area config files, to trigger a rebuild when they change
 - **Folders**:<br>
   If any of the root level `components`, `layouts`, `pages` or `stores` folders have been moved to `areas/app` it updates Nuxt's `options.dir` config and stores a new Webpack alias value (for the next step)
 - **Aliases**:<br>
   If any Webpack aliases were generated, they are added to the build using `extendBuild()`
 - **Components**:<br>
   Updates Nuxt's `options.components` array with the path of `components` folders from all areas, so that components will be auto-imported.
+
+Generation:
+
 - **Routes**:<br>
   Calls the [Routes Service](#routes-service) to build the routes for all areas and adds them to the app using `extendRoutes()` 
 - **Stores**:<br>
   Calls the [Store Service](#store-service) to get the stores for all areas, and adds them to the [plugin](#the-plugin) using `addPlugin()`
-- **Watch**:<br>
-  Updates Nuxt's `options.watch` config with the paths of area config files, to trigger a rebuild when they change 
+
+Cleanup:
+
 - **Debug**:<br>
   Optionally calls the [Debug Service](#debug-service) to dump generated options and config to file to help with debugging
 

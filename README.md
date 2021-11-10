@@ -438,17 +438,16 @@ If things at any point don't work, for example you're experimenting with areas s
 Set the `debug` option to `true` and check `areas/.debug/` for a folder of files which Areas will output each time there's the server is rebuilt:
 
 ```
-+- src
-    +- areas
-        +- .debug
-            +- .gitignore
-            +- alias.js
-            +- areas.js
-            +- nuxt.js
-            +- options.js
-            +- routes.js
-            +- stores.js
-            +- watch.js            
++- areas
+    +- .debug
+        +- .gitignore
+        +- alias.js
+        +- areas.js
+        +- nuxt.js
+        +- options.js
+        +- routes.js
+        +- stores.js
+        +- watch.js            
 ```
 
 For example, the `areas.js` file shows how the areas are processed prior to building routes and registering stores:
