@@ -132,9 +132,12 @@ export function getArea (path, route = '/', namespace = '/') {
  * @param   {string}    path
  * @param   {string}   [route]
  * @param   {string}   [namespace]
- * @returns {Area}
+ * @returns {Area|undefined}
  */
 export function getPackage (path, route = '/packages', namespace = '/packages') {
+  // store path for logging
+  const originalPath = path
+
   // fix webpack aliases
   const rxAlias = /^[~@]\//
   if (rxAlias.test(path)) {
@@ -144,6 +147,12 @@ export function getPackage (path, route = '/packages', namespace = '/packages') 
   // resolve absolute path
   route = resolve('/', route)
   path = resolve(path)
+
+  // check folder exists
+  if (!existsSync(path)) {
+    console.warn(`[ AREAS ] Package "${originalPath}" does not exist`)
+    return
+  }
 
   // check if package
   const packageFile = resolve(path, 'package.json')
@@ -175,6 +184,6 @@ export function getConfig (path) {
     return require(path)
   }
   catch (err) {
-    console.warn(`There was a problem reading Area config "${path}". The error is: ${err.message}`)
+    console.warn(`[ AREAS ] There was a problem reading Area config "${path}". The error is: ${err.message}`)
   }
 }

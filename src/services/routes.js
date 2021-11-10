@@ -83,7 +83,7 @@ function checkRoutes (routes, srcDir, routePrefix = '') {
 
       // warn if route does not exist
       if (!existsSync(route.component)) {
-        console.warn(`Component "${route.component.replace(__dirname, '')}" does not exist`)
+        console.warn(`[ AREAS ] Component "${route.component.replace(__dirname, '')}" does not exist`)
         route.component = resolve(__dirname, '../components/Missing.vue')
       }
     }

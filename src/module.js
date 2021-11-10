@@ -52,7 +52,9 @@ const nuxtModule = function (options) {
   if (options.packages) {
     options.packages.forEach(entry => {
       const area = getPackage(entry.src, entry.route, entry.namespace)
-      areas.push(area)
+      if (area) {
+        areas.push(area)
+      }
     })
   }
 

@@ -367,7 +367,7 @@ export default {
     app: 'app',
     
     // update webpack aliases if areas/app folder is used 
-    aliases: tre,
+    aliases: true,
     
     // optionally save debug output to ./areas/.debug
     debug: false,
