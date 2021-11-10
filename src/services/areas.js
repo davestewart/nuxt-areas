@@ -57,9 +57,9 @@ export function getAreas (path, route = '/', namespace = '/') {
   // process folders
   for (const folder of folders) {
     const results = getArea(resolve(path, folder), resolve(route, folder), resolve(namespace, folder))
-    Array.isArray(results)
-      ? areas.push(...results)
-      : areas.push(results)
+    if (results) {
+      areas.push(results)
+    }
   }
 
   // return
@@ -78,11 +78,21 @@ export function getArea (path, route = '/', namespace = '/') {
   // basic values
   const name = basename(path)
 
-  // check if this folder contains areas
+  // single area: should contain `pages` folder
+  if (existsSync(resolve(path, 'pages'))) {
+    const area = { name, route, namespace, path }
+    const configPath = tryFile(path, ['routes.js', 'routes.ts'])
+    if (configPath) {
+      area.configFile = basename(configPath)
+    }
+    return area
+  }
+
+  // otherwise: check for area config
   const configPath = tryFile(path, ['areas.js', 'areas.ts'])
 
-  // if we have a configuration file
-  if (existsSync(configPath)) {
+  // if we have a configuration file, merge the config
+  if (configPath) {
     // load config
     const config = getConfig(configPath) || {}
 
@@ -93,25 +103,25 @@ export function getArea (path, route = '/', namespace = '/') {
     if (config.route) {
       route = resolve(route, '../', config.route)
     }
-
-    // get child areas
-    return {
-      name,
-      route,
-      namespace,
-      path,
-      configFile: basename(configPath),
-      areas: getAreas(path, route, namespace)
-    }
   }
 
-  // if not multiple, must be a single area
-  else {
-    const area = { name, route, namespace, path }
-    const configPath = tryFile(path, ['routes.js', 'routes.ts'])
-    if (configPath) {
-      area.configFile = basename(configPath)
-    }
+  // area
+  const areas = getAreas(path, route, namespace)
+  const area = {
+    name,
+    route,
+    namespace,
+    path,
+  }
+
+  // add config file so it can be watched
+  if (configPath) {
+    area.configFile = basename(configPath)
+  }
+
+  // return if we have areas
+  if (areas.length) {
+    area.areas = areas
     return area
   }
 }
