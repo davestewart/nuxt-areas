@@ -4,6 +4,7 @@ import { name, version } from '../package.json'
 import { getRoutes } from './services/routes.js'
 import { getStores } from './services/store.js'
 import { getAreas, getPackage, getAreasConfigFiles } from './services/areas.js'
+import { saveDebugData, saveDebugFile } from './services/debug.js'
 import { getAliasedPath } from './utils/fs.js'
 
 const nuxtModule = function (options) {
@@ -95,6 +96,11 @@ const nuxtModule = function (options) {
 
       // udpate
       config.resolve.alias = Object.assign(aliases, config.resolve.alias)
+
+      // debug
+      if (config.name === 'server') {
+        saveDebugFile(ABS_BASE_PATH, 'alias', config.resolve.alias)
+      }
     })
   }
 
@@ -188,6 +194,14 @@ const nuxtModule = function (options) {
 
     // debug
     debug.watch = watch
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // debug
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  if (options.debug) {
+    saveDebugData(ABS_BASE_PATH, debug)
   }
 }
 
