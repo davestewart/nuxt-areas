@@ -3,46 +3,8 @@
 > Simple and scalable folder management for large Nuxt projects
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/davestewart/nuxt-areas/dev/artwork/nuxt-areas.png" alt="Nuxt Areas">
+  <img src="https://raw.githubusercontent.com/davestewart/nuxt-areas/master/docs/nuxt-areas.png" alt="Nuxt Areas">
 </p>
-
-## Abstract
-
-In general, most web application frameworks ship with a folder structure based on responsibility.
-
-This results in related files (i.e. products) being "striped" across the application:
-
-```
-+- src
-    +- components
-    |   +- product-list.vue             <- stripe 1
-    |   +- user-list.vue
-    +- pages
-    |   +- products.vue                 <- stripe 2
-    |   +- users.vue
-    +- store
-        +- products.js                  <- stripe 3
-        +- users.js
-        +- user.js
-```
-
-As applications grow in size, not only do related files get further apart, but they sit in a sea of *unrelated* files, adding a cognitive overhead to working across the various subsystems of the site.
-
-To mitigate we employ strategies such as path aliasing, naming strategies and further siloing:
-
-```
-+- src
-    +- components
-    |   +- products                     <- silo 1
-    |   |   +- product-list.vue
-    |   |   +- ...
-    |   +- user                         <- silo 2
-    |       +- user-list.vue
-    v       +- ...
-```
-
-However, by sticking to the constraints of the original organisational strategy, the codebase can end up feeling increasingly sprawling and brittle, making it harder to add new features or update existing ones.
-
 ## Overview
 
 Areas is a Nuxt module that enables you to group related files by "area":
@@ -68,23 +30,28 @@ Areas is a Nuxt module that enables you to group related files by "area":
                 +- user.js
 ```
 
-This results in related files sitting close together, making it easier to find, name and import, understand relationships, and work on related items without polution by, or to, other areas.
+Co-locating files this way has various advantages:
 
-Nuxt's "global" folders such as `plugins`, `modules`, `static` , etc remain in the root, providing another layer of siloing between global and local concerns and making it easier to determine what the site does just by looking at the folders.
+- it's easier to work on a discrete unit of functionality, such as "products" or "users"
+- it's easier to understand what the site does as a whole
+- it's easier to see how related files work together
+- it's less hopping about between multiple branches of the folder tree
+- it's easier to find a home for components, classes, or data 
+- naming is easier and imports are shorter
 
-Like Nuxt, Areas automatically loads siloed components and stores, and will automatically generate routes based on the filesystem *or* can give you *per-area* configuration of routing.
+Nuxt's more "global" concerns such as `plugins`, `modules`, `static` , etc remain in the root, making the overall "shape" of the site more intuitive.
+
+Like Nuxt, Areas builds routes from pages, and registers stores and components.
+
+You can even add areas from external sources, providing a no-code way to share or modularise parts of your application.
 
 ## Demo
 
-To see what a working Nuxt Areas site look like, you can download and run the following demo:
+To see what a working Nuxt Areas site look like, you can check out the demo:
 
 - https://github.com/davestewart/nuxt-areas-demo
 
-If you want to check it out online, go to:
-
-- https://codesandbox.io/s/nuxt-areas-demo-eovs8
-
-The demo covers all the use cases listed below.
+The demo covers all the features listed below.
 
 ## Setup
 
@@ -111,21 +78,29 @@ Next, add a new root-level folder named `areas`:
     +- areas
 ```
 
+Continue reading to learn how to start from scratch, or migrate an existing site.
+
 ## Usage
 
-### Add or move content new areas subfolders
+### Add or move content to new areas subfolders
 
-To get started, you're going to create or move content to subfolders of `areas`.
+#### Getting started
 
-Remember, all `areas` sub folders follow the same routing and namespacing rules as the main Nuxt application.
+To get started, you're going to create or migrate content to named subfolders of `areas`.
+
+To start with:
+
+- create a folder under `areas`
+- the folder **must** contain at least a `pages` folder
+- the folder **may** contain `components`,  `store` and any other folders you like
+
+Note that folders follow the same routing and namespacing rules as the main Nuxt application.
 
 The Areas module will:
 
-- build prefixed routes from `pages`
-- register namespaced stores from `store` or `store.js`
-- register components in `components`
-- read any `area.config.js` and customise routes or stores based on the exports 
-- ignore other folders (but you can add them and import locally, for example `classes` or `data`)
+- build prefixed routes from `pages/*`
+- register namespaced stores from `store/*` or `store.js`
+- register components in `components/*`
 
 Let's pretend we're adding a products area:
 
@@ -139,7 +114,7 @@ Let's pretend we're adding a products area:
         +- pages
         |   +- index.vue
         |   +- _id.vue
-        +- store.js                     <-- store can be a file or folder; namespacing will be determined automatically
+        +- store.js              <-- store can be a file or folder; namespacing will be determined automatically
 ```
 
 The following components will be automatically registered:
@@ -155,7 +130,7 @@ The following routes will be generated:
 /products/:id
 ```
 
-The store will be namespaced under:
+The store state will be accessible at:
 
 ```
 $store.state.products
@@ -167,42 +142,50 @@ You can import the Product model directly from the store:
 import Product from './classes/Product.js'
 ````
 
-If you're:
+#### Migrating an existing site
 
-- happy with the standard Nuxt approach, add as many folders as you need and your application should just run
+If you're migrating an existing site, ensure you rename pages and stores so routes and namespaces work correctly:
 
-- migrating an existing site, you *may* need to read on to customise routes or namespaces
+```bash
+# from
+/pages/users.vue
+
+# to
+/areas/users/pages/index.vue
+```
+
+ ```bash
+ # from
+ /store/users.js
+ 
+ # to
+ /areas/users/store.js
+ /areas/users/store/index.js # alternative
+ ```
+
+If unsure, move one file at a time and test the routes, then move on to the next one.
 
 ### Configure custom routing using JavaScript
 
-If you want to break out of filesystem based routing, for example, a more intuitive CRID setup, you can add an `area.config.js` (or `.ts`) file:
+Areas allows you to break out of filesystem based routing by adding a `routes.js` (or `.ts`) file.
+
+For example, let's say we want to create a more intuitive CRUD setup:
 
 ```
 +- areas
     +- products
        +- pages
        |   +- index.vue
-       |   +- edit.vue                  <-- edit can be used for edit and create
+       |   +- edit.vue           <-- edit can be used for edit and create
        |   +- view.vue
-       +- area.config.js                <-- config file export overrides filesystem routing
+       +- routes.js              <-- routes export overrides filesystem routing
 ```
 
-The file should export **area-relative** routes defining `path`, `component` and optionally `children`:
-
-````ts
-export const routes = [
-    { path: string, component: string, children: route[] }
-]
-````
-
-Note that top level routes:
-
-- must contain a leading slash
-- must explicitly set the `path` of the route (Areas doesn't add the folder name automatically!)
+The file should export export a single `routes` const:
 
 ```js
 export const routes = [
-  { path: '/products', component: 'pages/index.vue', children: [
+  { path: '', component: 'pages/index.vue', children: [
     { path: 'create', component: 'pages/edit.vue'},
     { path: ':id/edit', component: 'pages/edit.vue'},
     { path: ':id', component: 'pages/view.vue'},
@@ -210,109 +193,170 @@ export const routes = [
 ]
 ```
 
-See the [Config](#config) section for more information.
+Note that:
 
-### Modify route prefixes and store namespaces
+- `route` must be an array of routes
+- each route should define `path`, `component` and optionally `children`
+- component properties should be relative to the routes file
 
-#### Routes
+If you want to simplify the setup, you can import and use the Areas [helpers](https://github.com/davestewart/nuxt-areas/blob/main/src/utils/client.js):
 
-There may be times when you need a common route, or just want to structurally group areas without adding a route.
+```js
+import { page } from 'nuxt-areas'
 
-You can nest areas under subfolders, as long as you provide a config file which exports a `path` constant:
+// generates the same output as above
+export const routes = [
+  page('', 'index', [
+    page('create', 'edit'),
+    page(':id/edit', 'edit'),
+    page(':id', 'view'),
+  ]),
+]
+```
+
+### Group routes and namespaces under subfolders
+
+#### Add a subfolder
+
+Areas lets you use subfolders to group routes or namespaces.
+
+Simply add a named subfolder with individual area folders (those containing `pages` folders) beneath:
 
 ```
 +- areas
     +- products                         <-- this is the "grouping" folder
-        +- clothes                      <-- areas 1
+        +- clothes                      <-- area 1
         |   +- pages
         |   +- ...
         +- shoes                        <-- area 2
-        |   +- pages
+            +- pages
+            +- ...
+```
+
+Note that:
+
+- route paths and store namespaces will come under `products`
+- subfolders with a `pages` folder are counted as areas
+- you can add as many subfolders as you like
+
+#### Configure routes for subfolder content
+
+After adding an areas subfolder, you can reconfigure the routes or store namespaces for all content beneath.
+
+An an `areas.js` config file to the subfolder like so:
+
+```
++- areas
+    +- products
+        +- clothes
         |   +- ...
-        +- area.config.js               <-- config file configures how the routes are built
+        +- shoes
+        |   +- ...
+        +- areas.js                      <-- config file
 ```
 
-The config file should look like this:
+From the config file, export alternative names as required:
 
 ```ts
-export const path = 'products'
+export const route = 'foo'     				  // rename route segment to "foo"
+export const namespace = 'bar'          // rename store namespace to "foo"
 ```
 
-The final routes will be:
+Areas uses Node's `Path.resolve()` to determine routes and namespaces as it traverses the folder structure, so you have quite a bit of power.
 
-```
-/products/clothes/*
-/products/shoes/*
-```
-
-You can also prevent Areas from generating a route:
+Take the doubly-grouped area `/areas/products/shoes` with an area `trainers` 
 
 ```ts
-export const path = ''
+// skip naming this group
+export const route = ''                 // /products/trainers
+
+// go back to the root
+export const route = '/'                // /trainers
+
+// areas/products/shoes
+export const route = '../foo'           // /foo/trainers
 ```
 
-The final routes will be:
+Note:
 
-```
-/clothes/*
-/shoes/*
-```
+- you can configure store namespaces the same way
+- don't overcomplicate things – simpler is better!
 
-#### Stores
+Advanced usage
 
-To change the namespacing of stores, export a `namespace` constant from the store itself:
+### Move Nuxt application content to areas
 
-```js
-// /areas/products/clothes/store.js
-
-export const namespace = 'clothes'
-```
-
-The store will be accessible at:
-
-```
-$store.state.clothes
-```
-
-### Move application content to areas
-
-By design, Areas namespaces all areas folders with a prefixed route and store.
-
-However, it reserves a special folder `app` where you can move root-level `layouts`, `pages`, and `store` folders to simplify your main Nuxt app: 
+Whether you are creating or migrating content to areas subfolders, you may have noticed some lingering content in the root:
 
 ```
 +- src
     +- areas
-    |   +- app                  <-- move nuxt-specific content to special "app" folder
+    |   +- ...
+    +- assets
+    +- ** components **
+    +- ** layouts **
+    +- ** pages **
+    +- ** store **
+    +- static
+```
+
+Whilst this is not a problem, it can feel a bit untidy, so Areas provides a way to move "app" level content to a special folder `areas/app`: 
+
+```
++- src
+    +- areas
+    |   +- app                  <-- consider this area your core application
     |   |   +- components
     |   |   +- layouts
     |   |   +- pages
     |   |   +- store
     |   +- ...
     +- assets                   <-- global nuxt folders remain in the root
-    +- services
     +- static
 ```
 
-If Areas detects `components` , `layouts`, `pages`, or `store`  folders within `app` it will reconfigure Nuxt using the [options.dir](https://nuxtjs.org/docs/configuration-glossary/configuration-dir) configuration.
+Once moved, Areas will detect and:
 
-To test this out, move these folders under `areas/app`, restart the server; everything should continue working as before.
+- reconfigure your [options.dir](https://nuxtjs.org/docs/configuration-glossary/configuration-dir) configuration
+- update [Webpack alias](https://nuxtjs.org/docs/configuration-glossary/configuration-alias/) configuration
 
-### Add areas from external sources
+To test this out, simply move these folders and restart the server; everything should continue working as before.
 
-Areas also makes it possible to add area folders from external locations, such as folders or NPM packages.
+### Add external areas to your application
+
+Areas makes it possible to add area folders from *external* locations, such as folders or NPM packages.
 
 This might be useful if you want to share common functionality across Nuxt apps, or make third-party functionality available to others.
 
-#### Authoring
+External folders are configured in `nuxt.config.js`:
 
-Build the area as you would any other  
+```js
+export default {
+  areas: {
+    packages: [
+      // folder
+      { src: './packages/admin', route: '/admin' },
+      
+      // npm package
+      { src: 'user-admin', route: '/admin/users', namespace: '/admin/users' }
+    ]
+  }
+}
+```
+
+In addition to the `src`, the `route` must be specified and the `namespace` (if a store is provided) may be specified.
+
+If you want to author your Area as a package:
+
+- follow all the guidance up to this point
+- Include an empty  `area.js` file in the folder that contains the 
+- point the `main` key in your `package.json` points towards the `area.js` file
 
 ## Configuration
 
 ### Nuxt config
 
-Nuxt has two configuration options that you can set in your `nuxt.config.js` file:
+Nuxt has various configuration options that you can set in your `nuxt.config.js` file:
 
 ```js
 export default {
@@ -322,6 +366,12 @@ export default {
     
     // the special "app" folder you want to reconfigure root-level content to load from
     app: 'app',
+    
+    // update webpack aliases if areas/app folder is used 
+    aliases: tre,
+    
+    // optionally save debug output to ./areas/.debug
+    debug: false,
     
     // additional packages to install
     packages: [
@@ -333,139 +383,36 @@ export default {
       
 
       // npm package + override route and store namespace
-      { src: 'nuxt-areas-module-admin', route: 'admin/users', namespace: 'admin.users' }
+      { src: 'nuxt-areas-module-admin', route: 'admin/users', namespace: 'admin/users' }
     }
   }
 }
 ```
 
-### Areas config
-
-Areas enables you to configure individual areas on a per-folder basis.
-
-#### Location
-
-Add a new file to any area you want to configure:
-
-```
-+- src
-    +- areas
-        +- foo
-            +- pages
-            |   +- index.vue
-            |   +- view.vue
-            +- area.config.js (or .ts)
-```
-
-From the `area.config.js` file, you will export constants that Areas will read.
-
-#### Routes
-
-Configuring routes is mainly useful when you want to break out of Nuxt's filesystem routing. 
-
-You should export a single `routes` constant:
-
-```js
-export const routes = [
-  // parent page with <nuxt-child>
-  { path: '/foo', component: 'pages/index.vue', children: [
-    
-    // nested page
-    { path: '', component: 'pages/all.vue'},
-    
-    // single route
-    { path: ':id',  component: 'pages/view.vue'},
-  ]}
-  
-]
-```
-
-This works exactly the same way Vue Router, so:
-
-- `routes` must be array of `route`s
-- each `route` should contain `path`, `component`, and optionally `children` properties
-- root-level `path`s must **must** start with a leading slash
-- `component` **must** be an **area-relative** string path
-- Areas will **not** prefix the route with the area (so include or omit, as appropriate)
-
-If you want to simplify the setup, you can import and use the Areas `page()` or `route()` helper:
-
-```js
-import { page, route } from 'nuxt-areas'
-
-export const routes = [
-  // adds `.vue` suffix
-  route('/foo/:id', 'pages/view'),
-  
-  // adds `page/` prefix and `.vue` suffix
-  page('/foo/:id', 'index'),
-]
-```
-
-#### Path
-
-If you want to group folders, you will need to tell Areas that the folder is a group, and what the path should be:
-
-```
-+- src
-    +- areas
-        +- products
-            +- foo
-            |   +- pages
-            |       +- index.vue
-            |       +- view.vue
-            +- area.config.js (or .ts)
-```
-
-You can export a path matching the folder, or modify it as required:
-
-```js
-// prefix child pages with the folder name
-export const path = '/products'
-
-// prefix child pages with different route
-export const path = '/products/en'
-
-// remove the path segment; use the folder for grouping only
-export const path = ''
-```
-
-### Nuxt directory config
-
-If you move any of the following root-level folders to `areas/app`  then Areas will reconfigure Nuxt using [options.dir](https://nuxtjs.org/docs/configuration-glossary/configuration-dir/):
-
-- `components`
-- `layouts`
-- `pages`
-- `store`
-
-You may need to restart the server, but your app will run as usual.
-
 ### Alias config
 
-If you move your application folders to `areas/app` you may want to tweak TypeScript and Webpack path aliases.
+If you move your application folders to `areas/app` you will need to tweak TypeScript (and optionally Webpack) path aliases.
 
-For both targets you will need to add the new aliases so they are read by the system **before** the existing aliases; this is because with aliases, the first matching path wins, so placing them after `~/` would mean the paths would not be found.
+Areas's aliases should be positioned so they are read by the system **before** the existing aliases; this is because with aliases, the first matching path wins, so placing them after `~/` would mean the paths would not be found.
 
 For TypeScript, edit `tsconfig.json` and make sure aliases are positioned first:
 
 ```json
 {
   "compilerOptions": {
-    ...
     "paths": {
       "~/components/*": [ "./areas/app/components/*" ],
       "~/layouts/*": [ "./areas/app/layouts/*" ],
       "~/store/*": [ "./areas/app/store/*" ],
       "~/*": [ "./*" ],
-      ...
     }
   }
 }
-
 ```
 
-For Webpack, edit `nuxt.config.js` and assign the aliases first.
+Note that Webpack aliases are rewritten automatically by Areas. 
+
+If you disable this option (for whatever reason) edit `nuxt.config.js` and assign the aliases yourself.
 
 You can use a package like [Alias HQ](https://www.npmjs.com/package/alias-hq) to piggyback your TypeScript config to keep your alias configuration in one place only.
 
@@ -475,13 +422,74 @@ import hq from 'alias-hq'
 const config = {
   build: {
     extend (config) {
-      config.resolve.alias = Object.assign(hq.get('webpack'), config.resolve.alias)
+      const alias = {
+        areas: "./areas",
+				...hq.get('webpack'),
+      }
+      config.resolve.alias = Object.assign(alias, config.resolve.alias)
     }
   },
 }
 ```
 
+## Debugging
 
+If things at any point don't work, for example you're experimenting with areas subfolders configuration, you can dump every setting, option and configuration that Areas uses or generates, to disk so you can get an idea of what is going on beneath the hood.
 
+Set the `debug` option to `true` and check `areas/.debug/` for a folder of files which Areas will output each time there's the server is rebuilt:
 
+```
++- src
+    +- areas
+        +- .debug
+            +- .gitignore
+            +- alias.js
+            +- areas.js
+            +- nuxt.js
+            +- options.js
+            +- routes.js
+            +- stores.js
+            +- watch.js            
+```
 
+For example, the `areas.js` file shows how the areas are processed prior to building routes and registering stores:
+
+```js
+// Areas generates this configuration to extend routes and register stores
+export const areas = [
+  {
+    name: 'bar',
+    route: '/bar',
+    namespace: '/bar',
+    path: '/Volumes/Data/Work/OpenSource/JavaScript/NuxtAreas/nuxt-areas-demo/areas/bar'
+  },
+  {
+    name: 'baz',
+    route: '/baz',
+    namespace: '/baz',
+    path: '/Volumes/Data/Work/OpenSource/JavaScript/NuxtAreas/nuxt-areas-demo/areas/baz',
+    configFile: 'routes.js'
+  },
+```
+
+You can make changes and watch files for updates, and determine how the final files are being built.
+
+If you want to know what Nuxt Areas is doing and how it is doing it, take a look at [src/README.md](./src/README.md).
+
+## Issues
+
+Nuxt Areas is still prerelease, so I'm looking to get feedback and squish any bugs before final release.
+
+Please do jump in and test, and let me know what doesn't work in the [issues](https://github.com/davestewart/nuxt-areas/issues).
+
+Thanks!
+
+## Logo
+
+If you're wondering what the logo is all about, it is the [Eye of Providence](https://en.wikipedia.org/wiki/Eye_of_Providence), or "all-seeing eye".
+
+When I was experimenting with designs, I tested ideas with folders, network icons, the share icon, triangles, the letter A, but nothing seemed to resonate.
+
+Someone on Twitter mentioned "Area 51" which I thought was amusing but didn't take it seriously as a logo idea, but later the Eye of Providence popped into my head. Crazily, it seemed like it might work; Areas give you a top-down overview of application modules (the eye), it gives you a hierarchy (the triangle) and it's a pretty radical approach (the rays & stars). Plus, it's a little bit whacky and goes with the slightly esoteric title!
+
+So there you have it :)     
