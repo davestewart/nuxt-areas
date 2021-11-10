@@ -73,13 +73,14 @@ const nuxtModule = function (options) {
   if (existsSync(ABS_APP_PATH)) {
     const dirs = ['components', 'layouts', 'pages', 'store']
     for (const dir of dirs) {
-      const dirPath = join(REL_APP_PATH, dir)
-      if (existsSync(dirPath)) {
+      const absDirPath = join(ABS_APP_PATH, dir)
+      const relDirPath = join(REL_APP_PATH, dir)
+      if (existsSync(absDirPath)) {
         // @see https://nuxtjs.org/docs/configuration-glossary/configuration-dir
-        this.options.dir[dir] = dirPath
+        this.options.dir[dir] = relDirPath
 
         // webpack aliases
-        aliases['~/' + dir] = './' + dirPath
+        aliases['~/' + dir] = absDirPath
 
         // debug
         debug.nuxt.dir = this.options.dir
@@ -92,7 +93,7 @@ const nuxtModule = function (options) {
     // @see https://nuxtjs.org/docs/internals-glossary/internals-module-container#extendbuild-fn
     this.extendBuild((config) => {
       // solves a bug where `areas` is sometimes not found
-      aliases[options.base] = './' + REL_BASE_PATH
+      aliases[options.base] = ABS_BASE_PATH
 
       // udpate
       config.resolve.alias = Object.assign(aliases, config.resolve.alias)
@@ -108,27 +109,35 @@ const nuxtModule = function (options) {
   // components
   // ---------------------------------------------------------------------------------------------------------------------
 
-  // ensure components is an array
-  if (this.options.components === true) {
-    this.options.components = [
-      `~/${this.options.dir.components || 'components'}`,
-    ]
+  // helper function
+  function makeComponent (path) {
+    return {
+      path,
+      pattern: '**/*.{vue,js,ts,tsx}',
+      pathPrefix: false,
+    }
   }
-  else if (!this.options.components) {
+
+  // ensure nuxt components is an array
+  const optionsComponents = this.options.components
+  if (!Array.isArray(optionsComponents)) {
     this.options.components = []
   }
 
-  // @see https://nuxtjs.org/docs/configuration-glossary/configuration-components
-  // @see https://github.com/nuxt/components#directories
-  const components = []
-  areas.forEach(area => {
-    components.push({
-      path: getAliasedPath(area.path),
-      pattern: 'components/**/*.{vue,js,ts,tsx}',
-      pathPrefix: false,
-    })
+  // add current components folder
+  const components = [
+    makeComponent(`~/${this.options.dir.components || 'components'}`)
+  ]
+
+  // add areas components folders
+  areas.forEach(function (area) {
+    const path = join(area.path, 'components')
+    const config = makeComponent(getAliasedPath(path))
+    components.push(config)
   })
 
+  // @see https://nuxtjs.org/docs/configuration-glossary/configuration-components
+  // @see https://github.com/nuxt/components#directories
   this.options.components.push(...components)
 
   // debug
@@ -205,6 +214,9 @@ const nuxtModule = function (options) {
   }
 }
 
-nuxtModule.meta = { name, version }
+nuxtModule.meta = {
+  name,
+  version
+}
 
 export default nuxtModule
