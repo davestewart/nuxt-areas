@@ -5,6 +5,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/davestewart/nuxt-areas/master/docs/nuxt-areas.png" alt="Nuxt Areas">
 </p>
+
 ## Overview
 
 Areas is a Nuxt module that enables you to group related files by "area":
@@ -258,7 +259,7 @@ An an `areas.js` config file to the subfolder like so:
 From the config file, export alternative names as required:
 
 ```ts
-export const route = 'foo'     				  // rename route segment to "foo"
+export const route = 'foo'              // rename route segment to "foo"
 export const namespace = 'bar'          // rename store namespace to "foo"
 ```
 
@@ -281,8 +282,6 @@ Note:
 
 - you can configure store namespaces the same way
 - don't overcomplicate things – simpler is better!
-
-Advanced usage
 
 ### Move Nuxt application content to areas
 
@@ -424,7 +423,7 @@ const config = {
     extend (config) {
       const alias = {
         areas: "./areas",
-				...hq.get('webpack'),
+          ...hq.get('webpack'),
       }
       config.resolve.alias = Object.assign(alias, config.resolve.alias)
     }
@@ -490,6 +489,6 @@ If you're wondering what the logo is all about, it is the [Eye of Providence](ht
 
 When I was experimenting with designs, I tested ideas with folders, network icons, the share icon, triangles, the letter A, but nothing seemed to resonate.
 
-Someone on Twitter mentioned "Area 51" which I thought was amusing but didn't take it seriously as a logo idea, but later the Eye of Providence popped into my head. Crazily, it seemed like it might work; Areas give you a top-down overview of application modules (the eye), it gives you a hierarchy (the triangle) and it's a pretty radical approach (the rays & stars). Plus, it's a little bit whacky and goes with the slightly esoteric title!
+Someone on Twitter mentioned "Area 51" which I thought was amusing but didn't take it seriously as a logo idea, but later the Eye of Providence popped into my head. Crazily, it seemed like it might work; Areas gives you a better overview of your application (the eye), it keeps files in self-contained areas (the triangle) and it's a pretty radical approach (the rays & stars). Plus, it's a little bit whacky and goes with the slightly esoteric title!
 
 So there you have it :)     

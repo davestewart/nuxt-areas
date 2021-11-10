@@ -109,15 +109,6 @@ const nuxtModule = function (options) {
   // components
   // ---------------------------------------------------------------------------------------------------------------------
 
-  // helper function
-  function makeComponent (path) {
-    return {
-      path,
-      pattern: '**/*.{vue,js,ts,tsx}',
-      pathPrefix: false,
-    }
-  }
-
   // ensure nuxt components is an array
   const optionsComponents = this.options.components
   if (!Array.isArray(optionsComponents)) {
@@ -125,15 +116,20 @@ const nuxtModule = function (options) {
   }
 
   // add current components folder
-  const components = [
-    makeComponent(`~/${this.options.dir.components || 'components'}`)
-  ]
+  const pattern = '**/*.{vue,js,ts,tsx}'
+  const components = [{
+    path: `~/${this.options.dir.components || 'components'}`,
+    pattern,
+    pathPrefix: false,
+  }]
 
   // add areas components folders
   areas.forEach(function (area) {
-    const path = join(area.path, 'components')
-    const config = makeComponent(getAliasedPath(path))
-    components.push(config)
+    components.push({
+      path: getAliasedPath(area.path),
+      pattern: `components/${pattern}`,
+      pathPrefix: false,
+    })
   })
 
   // @see https://nuxtjs.org/docs/configuration-glossary/configuration-components
