@@ -2,6 +2,10 @@
 
 > Simple and scalable folder management for large Nuxt projects
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/davestewart/nuxt-areas/dev/artwork/nuxt-areas.png" alt="Nuxt Areas">
+</p>
+
 ## Abstract
 
 In general, most web application frameworks ship with a folder structure based on responsibility.
@@ -87,7 +91,7 @@ The demo covers all the use cases listed below.
 Install via the terminal:
 
 ```
-npm i nuxt-areas
+npm i nuxt-areas --save-dev
 ```
 
 In your `nuxt.config.js` set Areas as a build module:
@@ -270,7 +274,7 @@ The store will be accessible at:
 $store.state.clothes
 ```
 
-### Move all application content to areas
+### Move application content to areas
 
 By design, Areas namespaces all areas folders with a prefixed route and store.
 
@@ -292,7 +296,17 @@ However, it reserves a special folder `app` where you can move root-level `layou
 
 If Areas detects `components` , `layouts`, `pages`, or `store`  folders within `app` it will reconfigure Nuxt using the [options.dir](https://nuxtjs.org/docs/configuration-glossary/configuration-dir) configuration.
 
-To test this out, move these folders under `areas/app`, restart the server, and observe everything working as it was before.
+To test this out, move these folders under `areas/app`, restart the server; everything should continue working as before.
+
+### Add areas from external sources
+
+Areas also makes it possible to add area folders from external locations, such as folders or NPM packages.
+
+This might be useful if you want to share common functionality across Nuxt apps, or make third-party functionality available to others.
+
+#### Authoring
+
+Build the area as you would any other  
 
 ## Configuration
 
@@ -307,7 +321,20 @@ export default {
     base: 'areas',
     
     // the special "app" folder you want to reconfigure root-level content to load from
-    app: 'app'
+    app: 'app',
+    
+    // additional packages to install
+    packages: [
+      // local folder
+      { src: '~/packages/auth' },      
+
+      // local folder + override route
+      { src: '~/packages/auth': route: 'auth' },
+      
+
+      // npm package + override route and store namespace
+      { src: 'nuxt-areas-module-admin', route: 'admin/users', namespace: 'admin.users' }
+    }
   }
 }
 ```
@@ -403,7 +430,7 @@ export const path = '/products/en'
 export const path = ''
 ```
 
-### Directory config
+### Nuxt directory config
 
 If you move any of the following root-level folders to `areas/app`  then Areas will reconfigure Nuxt using [options.dir](https://nuxtjs.org/docs/configuration-glossary/configuration-dir/):
 
@@ -413,3 +440,48 @@ If you move any of the following root-level folders to `areas/app`  then Areas w
 - `store`
 
 You may need to restart the server, but your app will run as usual.
+
+### Alias config
+
+If you move your application folders to `areas/app` you may want to tweak TypeScript and Webpack path aliases.
+
+For both targets you will need to add the new aliases so they are read by the system **before** the existing aliases; this is because with aliases, the first matching path wins, so placing them after `~/` would mean the paths would not be found.
+
+For TypeScript, edit `tsconfig.json` and make sure aliases are positioned first:
+
+```json
+{
+  "compilerOptions": {
+    ...
+    "paths": {
+      "~/components/*": [ "./areas/app/components/*" ],
+      "~/layouts/*": [ "./areas/app/layouts/*" ],
+      "~/store/*": [ "./areas/app/store/*" ],
+      "~/*": [ "./*" ],
+      ...
+    }
+  }
+}
+
+```
+
+For Webpack, edit `nuxt.config.js` and assign the aliases first.
+
+You can use a package like [Alias HQ](https://www.npmjs.com/package/alias-hq) to piggyback your TypeScript config to keep your alias configuration in one place only.
+
+```js
+import hq from 'alias-hq'
+
+const config = {
+  build: {
+    extend (config) {
+      config.resolve.alias = Object.assign(hq.get('webpack'), config.resolve.alias)
+    }
+  },
+}
+```
+
+
+
+
+
