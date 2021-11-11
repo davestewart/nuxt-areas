@@ -422,7 +422,7 @@ const config = {
   build: {
     extend (config) {
       const alias = {
-        areas: "./areas",
+        areas: __dirname + "/areas",
           ...hq.get('webpack'),
       }
       config.resolve.alias = Object.assign(alias, config.resolve.alias)

@@ -28,7 +28,7 @@ The [module](./module.js) part of Nuxt Areas is a Nuxt [Module](https://nuxtjs.o
 
 ### What it does
 
-The module works through a set of tasks which are grouped and ordered as follows:
+The module code is run whenever Nuxt rebuilds the site, which could be as part of a build command, or when a watched file is updated. A set of sequentially tasks are called which are grouped and ordered as follows:
 
 Preparation:
 
@@ -42,9 +42,9 @@ Configuration:
 - **Watch**:<br>
   Updates Nuxt's `options.watch` config with the paths of area config files, to trigger a rebuild when they change
 - **Folders**:<br>
-  If any of the root level `components`, `layouts`, `pages` or `stores` folders have been moved to `areas/app` it updates Nuxt's `options.dir` config and stores a new Webpack alias value (for the next step)
-- **Aliases**:<br>
-  If any Webpack aliases were generated, they are added to the build using `extendBuild()`
+  If any of the root level `components`, `layouts`, `pages` or `stores` folders have been moved to `areas/app` it updates Nuxt's `options.dir` and `options.alias` config
+- **Webpack**:<br>
+  If any aliases were modified, Webpack is also updated using `extendBuild()`
 - **Components**:<br>
   Updates Nuxt's `options.components` array with the path of `components` folders from all areas, so that components will be auto-imported.
 
@@ -55,12 +55,10 @@ Generation:
 - **Stores**:<br>
   Calls the [Store Service](#store-service) to get the stores for all areas, and adds them to the [plugin](#the-plugin) using `addPlugin()`
 
-Cleanup:
+Information:
 
 - **Debug**:<br>
   Optionally calls the [Debug Service](#debug-service) to dump generated options and config to file to help with debugging
-
-The module code is run whenever Nuxt rebuilds the site, which could be as part of a build command, or when a watched file is updated.
 
 
 ## The plugin

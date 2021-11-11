@@ -93,11 +93,15 @@ const nuxtModule = function (options) {
         // @see https://nuxtjs.org/docs/configuration-glossary/configuration-dir
         this.options.dir[dir] = relDirPath
 
-        // webpack aliases
+        // @see https://nuxtjs.org/docs/configuration-glossary/configuration-alias/
+        this.options.alias[dir] = absDirPath
+
+        // @see https://webpack.js.org/configuration/resolve/#resolvealias
         aliases['~/' + dir] = absDirPath
 
         // debug
         debug.nuxt.dir = this.options.dir
+        debug.nuxt.alias = this.options.alias
       }
     }
   }
@@ -106,15 +110,15 @@ const nuxtModule = function (options) {
   if (options.aliases) {
     // @see https://nuxtjs.org/docs/internals-glossary/internals-module-container#extendbuild-fn
     this.extendBuild((config) => {
-      // solves a bug where `areas` is sometimes not found
+      // solves a bug where `areas` is sometimes not found during build
       aliases[options.base] = ABS_BASE_PATH
 
-      // udpate
+      // update
       config.resolve.alias = Object.assign(aliases, config.resolve.alias)
 
       // debug
       if (config.name === 'server') {
-        saveDebugFile(ABS_BASE_PATH, 'alias', config.resolve.alias)
+        saveDebugFile(ABS_BASE_PATH, 'webpack', { resolve: { alias: config.resolve.alias }})
       }
     })
   }
