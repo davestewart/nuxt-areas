@@ -99,6 +99,12 @@ const nuxtModule = function (options) {
         // @see https://webpack.js.org/configuration/resolve/#resolvealias
         aliases['~/' + dir] = absDirPath
 
+        // if store has moved, update options
+        if (dir === 'store') {
+          this.options.store = true
+          debug.nuxt.store = true
+        }
+
         // debug
         debug.nuxt.dir = this.options.dir
         debug.nuxt.alias = this.options.alias
@@ -191,6 +197,7 @@ const nuxtModule = function (options) {
     // ensure store is enabled
     if (!this.options.store) {
       this.options.store = true
+      debug.nuxt.store = true
     }
 
     // setup plugin
