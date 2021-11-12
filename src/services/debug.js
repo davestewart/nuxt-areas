@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { resolve } from 'path'
-import { inspect } from 'util'
+import { existsSync, mkdirSync, writeFileSync } from 'fs'
+import { inspect } from '../utils/debug.js'
 
 const comments = {
   areas: 'Areas generates this configuration to extend routes and register stores',
@@ -45,10 +45,7 @@ export function saveDebugFile (path, key, payload) {
   const logsPath = setupDebugFolder(path)
   const comment = comments[key]
   const file = resolve(logsPath, `${key}.js`)
-  const data = `// ${comment}\nexport const ${key} = ` + inspect(payload, {
-    depth: null,
-    colors: false,
-    compact: false
-  })
+  const js = inspect(payload)
+  const data = `// ${comment}\nexport const ${key} = ${js}\n`
   writeFileSync(file, data, 'utf8')
 }
