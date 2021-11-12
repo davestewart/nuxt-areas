@@ -45,7 +45,7 @@ Nuxt's more "global" concerns such as `plugins`, `modules`, `static` , etc remai
 
 Like Nuxt, Areas builds routes from pages, and registers stores and components.
 
-You can even add areas from external sources, providing a no-code way to share or modularise parts of your application.
+You can even [add areas](#external-areas) from external sources, providing a no-code way to share or modularise parts of your application.
 
 ## Demo
 
@@ -322,20 +322,22 @@ Once moved, Areas will detect and:
 
 To test this out, simply move these folders and restart the server; everything should continue working as before.
 
-### Add external areas to your application
+## External areas
 
-Areas makes it possible to add area folders from *external* locations, such as folders or NPM packages.
+Areas makes it possible to add area folders from *external* locations, such as folders, GitHub repos or NPM packages.
 
 This might be useful if you want to share common functionality across Nuxt apps, or make third-party functionality available to others.
+
+### Loading external areas
 
 External folders are configured in `nuxt.config.js`:
 
 ```js
 export default {
   areas: {
-    packages: [
+    external: [
       // folder
-      { src: './packages/admin', route: '/admin' },
+      { src: './external/admin', route: '/admin' },
       
       // npm package
       { src: 'user-admin', route: '/admin/users', namespace: '/admin/users' }
@@ -346,11 +348,54 @@ export default {
 
 In addition to the `src`, the `route` must be specified and the `namespace` (if a store is provided) may be specified.
 
-If you want to author your Area as a package:
+### Authoring external areas
 
-- follow all the guidance up to this point
-- Include an empty  `area.js` file in the folder that contains the 
-- point the `main` key in your `package.json` points towards the `area.js` file
+#### As a folder
+
+Like local areas, simply create a folder with `pages`, `store`, etc:
+
+```
++- some-folder
+    +- pages
+    |   +- ...
+    +- store
+        +- ...
+```
+
+Load the area by passing a relative or absolute path in config.
+
+#### As a package
+
+If you want to create an area to share via GitHub or NPM, create a package structure as normal, with the area as `src`:
+
+```
++- some-package
+    +- src
+    |   +- components
+    |   |   +- ...
+    |   +- pages
+    |       +- ...
+    +- package.json
+```
+
+In your `package.json` set the `main` key to point towards `src/index.js` (this file does not need to exist!):
+
+```json
+{
+  "name": "some-package",
+  "main": "src/index.js"
+}
+```
+
+This key will be read by Areas, the containing folder resolved, and the `pages`, `store` etc will be loaded as you would expect.
+
+Note that you **do not need to publish to NPM to load an area**, you can install directly from GitHub:
+
+```
+npm i username/repo
+```
+
+See the [Area 51](https://github.com/davestewart/area-51) demo module and the [Nuxt Areas Demo](https://github.com/davestewart/nuxt-areas-demo) for a working example.
 
 ## Configuration
 
@@ -373,13 +418,13 @@ export default {
     // optionally save debug output to ./areas/.debug
     debug: false,
     
-    // additional packages to install
-    packages: [
+    // external areas
+    external: [
       // local folder
-      { src: '~/packages/auth' },      
+      { src: '~/external/auth' },      
 
       // local folder + override route
-      { src: '~/packages/auth': route: 'auth' },
+      { src: '~/external/auth': route: 'auth' },
       
 
       // npm package + override route and store namespace

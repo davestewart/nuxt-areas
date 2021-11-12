@@ -107,8 +107,8 @@ function finishRoutes (routes, areaPath, routePrefix = '') {
     // chunk name: based on relative path
     route.chunkName = Path
       .relative('.', route.component)
+      .replace(/\.\.\//g, '')
       .replace(/\.\w+$/, '')
-      .replace(/-/g, '/')
 
     // route name: based on route path
     if (!route.name) {

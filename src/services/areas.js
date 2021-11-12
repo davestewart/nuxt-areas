@@ -1,6 +1,6 @@
-import { resolve, dirname, basename } from 'upath'
+import { resolve, dirname, basename, join } from 'upath'
 import { existsSync } from 'fs'
-import { getFolders, tryFile } from '../utils/fs'
+import { getFolders, tryFile, tryModule } from '../utils/fs'
 import * as Namespace from '../utils/namespace.js'
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -130,50 +130,45 @@ export function getArea (path, route = '/', namespace = '/') {
 /**
  * Gets an Area from a folder or package
  *
- * @param   {string}    path
+ * @param   {string}    src
  * @param   {string}   [route]
  * @param   {string}   [namespace]
  * @returns {Area|undefined}
  */
-export function getPackage (path, route = '/packages', namespace = '/packages') {
-  // store path for logging
-  const originalPath = path
-
-  // fix webpack aliases
-  const rxAlias = /^[~@]\//
-  if (rxAlias.test(path)) {
-    path = path.replace(rxAlias, './')
-  }
-
-  // resolve absolute path
-  path = resolve(path)
-
+export function getExternal (src, route = '/external', namespace = '/external') {
   // get route
   route = Namespace.resolve('/', route)
 
-  // check folder exists
-  if (!existsSync(path)) {
-    console.warn(`[ AREAS ] Package "${originalPath}" does not exist`)
-    return
-  }
+  // variables
+  let path = src
 
-  // if the path is a package
-  const packageFile = resolve(path, 'package.json')
-  if (existsSync(packageFile)) {
-    const data = require(packageFile) || {}
-    if (data) {
-      const { name, main } = data
-      if (main) {
-        const folder = dirname(resolve(path, main))
-        const area = getArea(folder, route, namespace)
-        area.name = name
-        return area
-      }
+  // check for folder
+  if (/^[.\/\\~@]/.test(src)) {
+    // fix webpack aliases
+    const rxAlias = /^[~@]\//
+    if (rxAlias.test(path)) {
+      path = path.replace(rxAlias, './')
+    }
+
+    // resolve absolute path
+    path = resolve(path)
+    if (existsSync(path)) {
+      return getArea(path, route, namespace)
     }
   }
 
-  // if the path is a folder
-  return getArea(path, route, namespace)
+  // check for module
+  else {
+    path = tryModule(src)
+    if (path) {
+      const area = getArea(path, route, namespace)
+      area.name = src
+      return area
+    }
+  }
+
+  // otherwise
+  console.warn(`[ AREAS ] Package "${src}" does not exist`)
 }
 
 /**

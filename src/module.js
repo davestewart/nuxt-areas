@@ -3,7 +3,7 @@ import { existsSync } from 'fs'
 import { name, version } from '../package.json'
 import { getRoutes } from './services/routes.js'
 import { getStores } from './services/store.js'
-import { getAreas, getPackage, getAreasConfigFiles } from './services/areas.js'
+import { getAreas, getExternal, getAreasConfigFiles } from './services/areas.js'
 import { saveDebugData, saveDebugFile } from './services/debug.js'
 import { getAliasedPath } from './utils/paths.js'
 
@@ -44,9 +44,14 @@ const nuxtModule = function (options) {
     .filter(area => area.path !== ABS_APP_PATH)
 
   // add external packages
-  if (options.packages) {
-    options.packages.forEach(entry => {
-      const area = getPackage(entry.src, entry.route, entry.namespace)
+  if (options.external) {
+    options.external.forEach(entry => {
+      const { src, route, namespace } = entry
+      if (!route) {
+        console.warn(`[ AREAS ] External area "${src}" must be configured with a route`)
+        return
+      }
+      const area = getExternal(src, route, namespace)
       if (area) {
         areas.push(area)
       }
