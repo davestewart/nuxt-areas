@@ -1,6 +1,7 @@
-import { resolve, dirname, basename } from 'path'
+import { resolve, dirname, basename } from 'upath'
 import { existsSync } from 'fs'
-import { getFolders, tryFile } from '../utils/fs.js'
+import { getFolders, tryFile } from '../utils/fs'
+import * as Namespace from '../utils/namespace.js'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // definitions
@@ -56,7 +57,7 @@ export function getAreas (path, route = '/', namespace = '/') {
 
   // process folders
   for (const folder of folders) {
-    const results = getArea(resolve(path, folder), resolve(route, folder), resolve(namespace, folder))
+    const results = getArea(resolve(path, folder), Namespace.resolve(route, folder), Namespace.resolve(namespace, folder))
     if (results) {
       areas.push(results)
     }
@@ -98,10 +99,10 @@ export function getArea (path, route = '/', namespace = '/') {
 
     // variables
     if ('namespace' in config) {
-      namespace = resolve(namespace, '../', config.namespace)
+      namespace = Namespace.resolve(namespace, '../', config.namespace)
     }
     if ('route' in config) {
-      route = resolve(route, '../', config.route)
+      route = Namespace.resolve(route, '../', config.route)
     }
   }
 
@@ -145,8 +146,10 @@ export function getPackage (path, route = '/packages', namespace = '/packages') 
   }
 
   // resolve absolute path
-  route = resolve('/', route)
   path = resolve(path)
+
+  // get route
+  route = Namespace.resolve('/', route)
 
   // check folder exists
   if (!existsSync(path)) {
@@ -154,7 +157,7 @@ export function getPackage (path, route = '/packages', namespace = '/packages') 
     return
   }
 
-  // check if package
+  // if the path is a package
   const packageFile = resolve(path, 'package.json')
   if (existsSync(packageFile)) {
     const data = require(packageFile) || {}
@@ -169,7 +172,7 @@ export function getPackage (path, route = '/packages', namespace = '/packages') 
     }
   }
 
-  // just get folder
+  // if the path is a folder
   return getArea(path, route, namespace)
 }
 

@@ -1,7 +1,9 @@
 import glob from 'glob'
+import hash from 'hash-sum'
+import Path from 'upath'
+import * as Namespace from '../utils/namespace.js'
+import { getAliasedPath, sortPaths } from '../utils/paths.js'
 import { sortBy } from '../utils/array.js'
-import { resolve } from 'path'
-import { getAliasedPath, sortPaths } from '../utils/fs.js'
 
 // ---------------------------------------------------------------------------------------------------------------------
 // definitions
@@ -23,6 +25,12 @@ import { getAliasedPath, sortPaths } from '../utils/fs.js'
 /**
  * Glob all stores in all areas
  *
+ * Note, glob returns:
+ *
+ * - absolute paths
+ * - with forward slashes
+ * - windows paths will start with driveletter, i.e. C:/
+ *
  * @param   {string}    path
  */
 export function globStores (path) {
@@ -36,7 +44,7 @@ export function globStores (path) {
 
 /**
  * @param   {Area[]}    areas         An array of areas to process
- * @returns {Store[]}                 An array of stores
+ * @returns {Store[]}                 An array of paths
  */
 export function getStores (areas) {
   // helpers
@@ -68,8 +76,8 @@ export function getStores (areas) {
           // }
 
           // convert path to namespace
-          const relPath = path.replace(area.path + '/', '')
-          let namespace = resolve(area.namespace, relPath)
+          const relPath = Path.relative(area.path, path)
+          let namespace = Namespace.resolve(area.namespace, relPath)
             .replace(/\/store\//, '/')
             .replace(/^\//, '')
             .replace(rxFile, '')
@@ -81,7 +89,7 @@ export function getStores (areas) {
 
           // return the object
           return {
-            ref: namespace.replace(/\//g, '_'),
+            ref: '_' + hash(path),
             path: getAliasedPath(path),
             namespace,
           }

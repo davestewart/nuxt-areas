@@ -1,10 +1,11 @@
 # Nuxt Areas
 
-> Simple and scalable folder management for large Nuxt projects
+> Scalable folder management for large Nuxt projects
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/davestewart/nuxt-areas/master/docs/nuxt-areas.png" alt="Nuxt Areas">
 </p>
+
 
 ## Overview
 

@@ -1,5 +1,5 @@
-import { existsSync, readdirSync,  } from 'fs'
-import { join, resolve, dirname, basename } from 'path'
+import { existsSync, readdirSync } from 'fs'
+import { join, resolve } from 'upath'
 
 export function getFolders (path, returnPath) {
   return readdirSync(path, { withFileTypes: true })
@@ -13,11 +13,8 @@ export function getFolders (path, returnPath) {
     })
 }
 
-export function getAliasedPath (path = '') {
-  return path.replace(resolve('.'), '~')
-}
-
 /**
+ * Attempts to get the first file that exists in the passed file list
  *
  * @param   {string}    folder
  * @param   {string[]}  files
@@ -29,40 +26,5 @@ export function tryFile (folder, files) {
     if (existsSync(path)) {
       return path
     }
-  }
-}
-
-/**
- * Path comparison function which places index.* first
- *
- * @usage   paths.sort(sortPaths)
- * @param   {string}  a
- * @param   {string}  b
- * @returns {number}
- */
-export function sortPaths (a, b) {
-  a = a.toLowerCase()
-  b = b.toLowerCase()
-  const aPath = dirname(a)
-  const bPath = dirname(b)
-  if (aPath < bPath) {
-    return -1
-  }
-  if (aPath > bPath) {
-    return 1
-  }
-  else {
-    const aFile = basename(a)
-    const bFile = basename(b)
-    if (aFile.startsWith('index.')) {
-      return -1
-    }
-    if (aFile < bFile) {
-      return -1
-    }
-    if (aFile > bFile) {
-      return 1
-    }
-    return 0
   }
 }

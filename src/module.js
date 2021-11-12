@@ -1,11 +1,11 @@
-import { resolve, join } from 'path'
+import { resolve, join } from 'upath'
 import { existsSync } from 'fs'
 import { name, version } from '../package.json'
 import { getRoutes } from './services/routes.js'
 import { getStores } from './services/store.js'
 import { getAreas, getPackage, getAreasConfigFiles } from './services/areas.js'
 import { saveDebugData, saveDebugFile } from './services/debug.js'
-import { getAliasedPath } from './utils/fs.js'
+import { getAliasedPath } from './utils/paths.js'
 
 const nuxtModule = function (options) {
   // ---------------------------------------------------------------------------------------------------------------------
@@ -212,6 +212,7 @@ const nuxtModule = function (options) {
   // ---------------------------------------------------------------------------------------------------------------------
 
   if (options.debug) {
+    console.info(' [ AREAS ] Dumping debug info')
     saveDebugData(ABS_BASE_PATH, debug)
   }
 }
