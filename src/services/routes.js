@@ -9,25 +9,21 @@ import { tryFile } from '../utils/fs.js'
 // definitions
 // ---------------------------------------------------------------------------------------------------------------------
 
+/** @typedef {import("nuxt").ModuleContainer} ModuleContainer */
+
 /**
- * Route definition
- *
- * @typedef   {Object}    Route
+ * @typedef   {object}    Route
  * @property  {string}    path
  * @property  {string}    component
  * @property  {Route[]}   children
  */
-class Route {
-  path
-  component
-  children
 
-  constructor (path, component, children) {
-    this.path = path
-    this.component = component
-    this.children = children
-  }
-}
+/**
+ * @typedef   {object}    RoutesOptions
+ * @property  {object}    build
+ * @property  {object}    router
+ * @property  {number}    nuxtVersion
+ */
 
 // ---------------------------------------------------------------------------------------------------------------------
 // functions
@@ -36,9 +32,9 @@ class Route {
 /**
  * Create routes using Nuxt's own createRoutes() utility
  *
- * @param   {string}    areaPath  The area folder to scan for pages
- * @param   {object}    options   Nuxt's options
- * @return  {Route[]}             An array of Route definitions
+ * @param   {string}          areaPath  The area folder to scan for pages
+ * @param   {RoutesOptions}   options   Options needed to build routes config
+ * @return  {Route[]}                   An array of Route definitions
  */
 function createRoutes (areaPath, options) {
   // @see https://github.com/nuxt/nuxt.js/blob/dev/packages/builder/src/builder.js#L43
@@ -82,12 +78,13 @@ function createRoutes (areaPath, options) {
 /**
  * Ensure routes exist, have correct names / chunk names
  *
- * @param     {Route[]}       routes        An array of route definitions
- * @param     {string}        areaPath      The absolute file path to the parent area
- * @param     {string}        routePrefix   The ancestor route path to this route
- * @return    {Route[]}
+ * @param   {Route[]}         routes        An array of route definitions
+ * @param   {string}          areaPath      The absolute file path to the parent area
+ * @param   {string}          routePrefix   The ancestor route path to this route
+ * @param   {RoutesOptions}   options       Options needed to build routes config
+ * @return  {Route[]}
  */
-function finishRoutes (routes, areaPath, routePrefix = '') {
+function finishRoutes (routes, areaPath, routePrefix = '', options) {
   // process routes
   routes.forEach(route => {
     // path: convert windows path to posix
@@ -118,9 +115,16 @@ function finishRoutes (routes, areaPath, routePrefix = '') {
     // component: alias path for brevity
     route.component = getAliasedPath(route.component)
 
+    // vue 3
+    if (options.nuxtVersion === 3) {
+      route.file = route.component
+      delete route.component
+      delete route.chunkName
+    }
+
     // process children
     if (route.children && Array.isArray(route.children)) {
-      finishRoutes(route.children, areaPath, Path.join(routePrefix, route.path))
+      finishRoutes(route.children, areaPath, Path.join(routePrefix, route.path), options)
 
       // remove name if there is a default child route
       if (route.children.find(child => child.name === route.name)) {
@@ -139,12 +143,12 @@ function finishRoutes (routes, areaPath, routePrefix = '') {
  * - if an area config file exists, it is processed
  * - if one doesn't exist, the folders are scanned
  *
- * @param   {Area[]}    areas         An array of areas to process
- * @param   {object}    nuxtOptions   Nuxt's options
- * @param   {number}    depth
+ * @param   {Area[]}          areas     An array of areas to process
+ * @param   {RoutesOptions}   options   Options needed to build routes config
+ * @param   {number}          depth     The traversal depth
  * @return  {Route[]}
  */
-export function getRoutes (areas, nuxtOptions, depth = 0) {
+export function getRoutes (areas, options, depth = 0) {
   // all route definitions
   const allRoutes = []
 
@@ -157,7 +161,7 @@ export function getRoutes (areas, nuxtOptions, depth = 0) {
 
     // CHILD AREAS
     if (area.areas) {
-      routes = getRoutes(area.areas, nuxtOptions, depth + 1)
+      routes = getRoutes(area.areas, options, depth + 1)
     }
 
     // SINGLE AREA
@@ -173,12 +177,12 @@ export function getRoutes (areas, nuxtOptions, depth = 0) {
 
       // otherwise, have nuxt create them
       else {
-        routes = createRoutes(path, nuxtOptions)
+        routes = createRoutes(path, options)
       }
 
       // if we have routes, check and add them
       routes = prefixRoutes(routes, prefix)
-      routes = finishRoutes(routes, path)
+      routes = finishRoutes(routes, path, '', options)
     }
 
     if (Array.isArray(routes)) {
@@ -192,4 +196,18 @@ export function getRoutes (areas, nuxtOptions, depth = 0) {
 
   // return
   return allRoutes
+}
+
+/**
+ * Creates route options
+ *
+ * @param   {ModuleContainer}  container
+ * @returns {RoutesOptions}
+ */
+export function makeRouteOptions (container) {
+  return {
+    build: container.options.build,
+    router: container.options.router,
+    nuxtVersion: container.nuxt['_version'] ? 3 : 2
+  }
 }

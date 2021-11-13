@@ -1,7 +1,7 @@
 import { resolve, join } from 'upath'
 import { existsSync } from 'fs'
 import { name, version } from '../package.json'
-import { getRoutes } from './services/routes.js'
+import { getRoutes, makeRouteOptions } from './services/routes.js'
 import { getStores } from './services/store.js'
 import { getAreas, getExternal, getAreasConfigFiles } from './services/areas.js'
 import { saveDebugData, saveDebugFile } from './services/debug.js'
@@ -173,7 +173,7 @@ const nuxtModule = function (options) {
   // ---------------------------------------------------------------------------------------------------------------------
 
   // routes
-  const routes = getRoutes(areas, this.options)
+  const routes = getRoutes(areas, makeRouteOptions(this))
 
   // @see https://nuxtjs.org/docs/configuration-glossary/configuration-router#extendroutes
   this.extendRoutes((allRoutes) => {
