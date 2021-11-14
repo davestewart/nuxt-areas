@@ -1,4 +1,4 @@
-import { basename, dirname, resolve } from 'upath'
+import Path, { basename, dirname, resolve } from 'upath'
 
 /**
  * Aliases the absolute path

@@ -178,7 +178,7 @@ const nuxtModule = function (options) {
   // @see https://nuxtjs.org/docs/configuration-glossary/configuration-router#extendroutes
   this.extendRoutes((allRoutes) => {
     routes.forEach(route => {
-      // remove old matching routes (HMR)
+      // Nuxt 2: passes in existing routes during HMR, so remove old ones to prevent duplicates
       const index = allRoutes.findIndex(oldRoute => oldRoute.path === route.path)
       if (index > -1) {
         allRoutes.splice(index, 1)

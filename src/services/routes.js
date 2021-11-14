@@ -3,6 +3,7 @@ import Path from 'upath'
 import * as NuxtUtils from '@nuxt/utils'
 import { resolveFiles, cleanRoutes, prefixRoutes, makeName } from '../utils/route.js'
 import { getAliasedPath } from '../utils/paths.js'
+import { clone } from '../utils/object.js'
 import { tryFile } from '../utils/fs.js'
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -80,51 +81,62 @@ function createRoutes (areaPath, options) {
  *
  * @param   {Route[]}         routes        An array of route definitions
  * @param   {string}          areaPath      The absolute file path to the parent area
- * @param   {string}          routePrefix   The ancestor route path to this route
+ * @param   {string}          routePrefix   The parent's route path to this route
  * @param   {RoutesOptions}   options       Options needed to build routes config
  * @return  {Route[]}
  */
 function finishRoutes (routes, areaPath, routePrefix = '', options) {
   // process routes
   routes.forEach(route => {
-    // path: convert windows path to posix
+    // path: convert possible windows path to posix
     route.path = Path.toUnix(route.path)
 
+    // component / file (vue 2 / vue 3)
+    let file = route.component || route.file
+
     // check for absolute path
-    if (!Path.isAbsolute(route.component)) {
-      route.component = Path.resolve(areaPath, route.component)
+    if (!Path.isAbsolute(file)) {
+      file = Path.resolve(areaPath, file)
 
       // warn if route does not exist
-      if (!Fs.existsSync(route.component)) {
-        console.warn(`[ AREAS ] Component "${route.component}" does not exist`)
-        route.component = Path.join(__dirname, '../components/Missing.vue')
+      if (!Fs.existsSync(file)) {
+        console.warn(`[ AREAS ] Component "${file}" does not exist`)
+        file = Path.join(__dirname, '../components/Missing.vue')
       }
     }
 
-    // chunk name: based on relative path
-    route.chunkName = Path
-      .relative('.', route.component)
-      .replace(/\.\.\//g, '')
-      .replace(/\.\w+$/, '')
+    // file: alias path for brevity
+    const moduleAlias = getAliasedPath(file)
 
-    // route name: based on route path
-    if (!route.name) {
-      route.name = makeName(routePrefix, route.path)
-    }
-
-    // component: alias path for brevity
-    route.component = getAliasedPath(route.component)
+    // current path: parent path + route path
+    const currentPath = Path.join(routePrefix, route.path)
 
     // vue 3
     if (options.nuxtVersion === 3) {
-      route.file = route.component
       delete route.component
-      delete route.chunkName
+      route.file = moduleAlias
+    }
+
+    // vue 2
+    else {
+      // update component
+      route.component = moduleAlias
+
+      // chunk name: based on relative file path
+      route.chunkName = Path
+        .relative('.', file)
+        .replace(/\.\.\//g, '')
+        .replace(/\.\w+$/, '')
+    }
+
+    // route name: based on current path
+    if (!route.name) {
+      route.name = makeName(currentPath)
     }
 
     // process children
     if (route.children && Array.isArray(route.children)) {
-      finishRoutes(route.children, areaPath, Path.join(routePrefix, route.path), options)
+      finishRoutes(route.children, areaPath, currentPath, options)
 
       // remove name if there is a default child route
       if (route.children.find(child => child.name === route.name)) {
@@ -172,7 +184,7 @@ export function getRoutes (areas, options, depth = 0) {
       // routes are configured
       if (configPath) {
         const config = require(configPath)
-        routes = config.routes
+        routes = clone(config.routes)
       }
 
       // otherwise, have nuxt create them

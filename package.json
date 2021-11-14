@@ -1,6 +1,6 @@
 {
   "name": "nuxt-areas",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Scalable folder management for large Nuxt projects",
   "main": "src/index.js",
   "files": [
