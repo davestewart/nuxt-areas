@@ -211,15 +211,16 @@ export function getRoutes (areas, options, depth = 0) {
 }
 
 /**
- * Creates route options
+ * Builds route options
  *
  * @param   {ModuleContainer}  container
+ * @param   {number}           nuxtVersion
  * @returns {RoutesOptions}
  */
-export function makeRouteOptions (container) {
+export function makeRouteOptions (container, nuxtVersion) {
   return {
     build: container.options.build,
     router: container.options.router,
-    nuxtVersion: container.nuxt['_version'] ? 3 : 2
+    nuxtVersion
   }
 }

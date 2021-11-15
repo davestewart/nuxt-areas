@@ -2,7 +2,7 @@ import { resolve, join } from 'upath'
 import { existsSync } from 'fs'
 import { name, version } from '../package.json'
 import { getRoutes, makeRouteOptions } from './services/routes.js'
-import { getStores } from './services/store.js'
+import { getStores, makeStoreOptions } from './services/store.js'
 import { getAreas, getExternal, getAreasConfigFiles } from './services/areas.js'
 import { saveDebugData, saveDebugFile } from './services/debug.js'
 import { getAliasedPath } from './utils/paths.js'
@@ -11,6 +11,11 @@ const nuxtModule = function (options) {
   // ---------------------------------------------------------------------------------------------------------------------
   // options
   // ---------------------------------------------------------------------------------------------------------------------
+
+  // version
+  const nuxtVersion = this.nuxt['_version']
+    ? 3
+    : 2
 
   // defaults
   const defaults = {
@@ -41,7 +46,11 @@ const nuxtModule = function (options) {
 
   // get areas
   const areas = getAreas(ABS_BASE_PATH)
-    .filter(area => area.path !== ABS_APP_PATH)
+    .filter(area => {
+      return nuxtVersion === 1
+        ? area.path !== ABS_APP_PATH // nuxt 2: skip app folder
+        : true // nuxt 3: all routes
+    })
 
   // add external packages
   if (options.external) {
@@ -60,26 +69,6 @@ const nuxtModule = function (options) {
 
   // debug
   debug.areas = areas
-
-  // ---------------------------------------------------------------------------------------------------------------------
-  // watch
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // @see https://nuxtjs.org/docs/configuration-glossary/configuration-watch#the-watch-property
-  if (this.options.dev) {
-    // watch
-    const watch = [
-      __dirname + '/**', // this package
-    ]
-
-    // add any config files to watch
-    watch.push(...getAreasConfigFiles(areas))
-
-    this.options.watch.push(...watch)
-
-    // debug
-    debug.watch = watch
-  }
 
   // ---------------------------------------------------------------------------------------------------------------------
   // folders + aliases
@@ -173,7 +162,7 @@ const nuxtModule = function (options) {
   // ---------------------------------------------------------------------------------------------------------------------
 
   // routes
-  const routes = getRoutes(areas, makeRouteOptions(this))
+  const routes = getRoutes(areas, makeRouteOptions(this, nuxtVersion))
 
   // @see https://nuxtjs.org/docs/configuration-glossary/configuration-router#extendroutes
   this.extendRoutes((allRoutes) => {
@@ -197,7 +186,7 @@ const nuxtModule = function (options) {
   // ---------------------------------------------------------------------------------------------------------------------
 
   // get stores
-  const stores = getStores(areas)
+  const stores = getStores(areas, makeStoreOptions(this, nuxtVersion))
   if (stores.length) {
     // ensure store is enabled
     if (!this.options.store) {
@@ -207,7 +196,7 @@ const nuxtModule = function (options) {
 
     // setup plugin
     this.addPlugin({
-      src: resolve(__dirname, 'plugin.js'),
+      src: resolve(__dirname, `plugins/vue-${nuxtVersion}.js`),
       fileName: 'areas.js',
       options: {
         ...options,
@@ -217,6 +206,30 @@ const nuxtModule = function (options) {
 
     // debug
     debug.stores = stores
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------------
+  // watch
+  // ---------------------------------------------------------------------------------------------------------------------
+
+  // @see https://nuxtjs.org/docs/configuration-glossary/configuration-watch#the-watch-property
+  if (this.options.dev) {
+    // watch
+    const watch = [
+      __dirname + '/**/*', // this package
+    ]
+
+    // add files to watch
+    watch.push(...getAreasConfigFiles(areas))
+    if (nuxtVersion === 3) {
+      watch.push(...stores.map(store => store.absPath))
+    }
+
+    // update watch
+    this.options.watch.push(...watch)
+
+    // debug
+    debug.watch = watch
   }
 
   // ---------------------------------------------------------------------------------------------------------------------

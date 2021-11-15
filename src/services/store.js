@@ -9,13 +9,21 @@ import { sortBy } from '../utils/array.js'
 // definitions
 // ---------------------------------------------------------------------------------------------------------------------
 
+/** @typedef {import("nuxt").ModuleContainer} ModuleContainer */
+
+/**
+ * @typedef   {object}    StoreOptions
+ * @property  {number}    nuxtVersion
+ */
+
 /**
  * Store import definition
  *
  * @typedef   {object}  Store
  * @property  {string}  ref          The import ref of the file
  * @property  {string}  namespace    The namespace of the store
- * @property  {string}  path         The file path of the store
+ * @property  {string}  path         The relative file path of the store
+ * @property  {string}  absPath      The absolute file path of the store
  */
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -46,7 +54,7 @@ export function globStores (path) {
  * @param   {Area[]}    areas         An array of areas to process
  * @returns {Store[]}                 An array of paths
  */
-export function getStores (areas) {
+export function getStores (areas, options) {
   // helpers
   const rxFile = /\.(js|ts)$/
   const allStores = []
@@ -91,6 +99,7 @@ export function getStores (areas) {
           return {
             ref: '_' + hash(path),
             path: getAliasedPath(path),
+            absPath: path,
             namespace,
           }
         })
@@ -104,4 +113,17 @@ export function getStores (areas) {
 
   // sort by namespace (so index.ext files are first)
   return allStores.sort(sortBy('namespace'))
+}
+
+/**
+ * Builds store options
+ *
+ * @param   {ModuleContainer}  container
+ * @param   {number}           nuxtVersion
+ * @returns {StoreOptions}
+ */
+export function makeStoreOptions (container, nuxtVersion) {
+  return {
+    nuxtVersion,
+  }
 }
