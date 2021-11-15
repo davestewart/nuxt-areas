@@ -97,10 +97,10 @@ export function getStores (areas, options) {
 
           // return the object
           return {
-            ref: '_' + hash(path),
-            path: getAliasedPath(path),
-            absPath: path,
+            module: '_' + hash(path),
             namespace,
+            relPath: getAliasedPath(path),
+            absPath: path,
           }
         })
     }

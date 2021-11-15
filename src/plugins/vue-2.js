@@ -1,14 +1,16 @@
-// imports
-<% options.stores.forEach(function(store) {
-%>import * as <%= store.ref %> from '<%= store.path %>'
-<%
-}); %>
+// store imports
+<%= options.stores.map(store => `import * as ${store.module} from '${store.relPath}'`).join('\n') %>
+
+// store info
+const stores = [
+  <%= options.stores.map(store => `{ module: ${store.module}, namespace: '${store.namespace}' }`).join(',\n  ') %>
+]
 
 // plugin function
 export default async function ({ store }) {
-  <% options.stores.forEach(function(store) {
-  %>registerModule(store, '<%= store.namespace || "" %>', <%= store.ref %>)
-  <% }); %>
+  stores.forEach(info =>{
+    registerModule(store, info.namespace, info.module)
+  })
 }
 
 // helper function
