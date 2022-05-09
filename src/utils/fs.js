@@ -1,7 +1,13 @@
 import { existsSync, readdirSync } from 'fs'
 import { join, resolve, dirname } from 'upath'
-import { getArea } from '../services/areas.js'
 
+/**
+ * Gets all sub folders in a target folder
+ *
+ * @param   {string}      path            A root folder in which to look for folders
+ * @param   {boolean}    [returnPath]     An optional flag to return absolute paths, vs only folder names
+ * @returns {string[]}                    An array of folder names or paths
+ */
 export function getFolders (path, returnPath) {
   return readdirSync(path, { withFileTypes: true })
     .filter(entry => entry.isDirectory())
@@ -15,11 +21,11 @@ export function getFolders (path, returnPath) {
 }
 
 /**
- * Attempts to get the first file that exists in the passed file list
+ * Attempts to get the first file that exists in the supplied file list
  *
- * @param   {string}    folder
- * @param   {string[]}  files
- * @return  {string|undefined}
+ * @param   {string}      folder          A root folder in which to look for files
+ * @param   {string[]}    files           A list of file names to check for
+ * @return  {string|undefined}            The absolute path to the first found file, if one exists
  */
 export function tryFile (folder, files) {
   for (const file of files) {
@@ -31,11 +37,11 @@ export function tryFile (folder, files) {
 }
 
 /**
- * Attempts to load a node module based on name
+ * Attempts to get the src path (indicated by package.json "main" property) of a named module
  * Note: should be able to use require.resolve() but it's not working
  *
- * @param   {string}  name
- * @return  {string|undefined}
+ * @param   {string}      name            The name of the node module to load
+ * @return  {string|undefined}            The absolute path of the module's src folder, if the module exists
  */
 export function tryModule (name) {
   const modulePath = resolve('node_modules', name)

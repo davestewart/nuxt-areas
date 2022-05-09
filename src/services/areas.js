@@ -1,4 +1,4 @@
-import { resolve, dirname, basename, join } from 'upath'
+import { resolve, basename } from 'upath'
 import { existsSync } from 'fs'
 import { getFolders, tryFile, tryModule } from '../utils/fs'
 import * as Namespace from '../utils/namespace.js'
@@ -72,10 +72,10 @@ export function getAreas (path, route = '/', namespace = '/') {
  *
  * @param   {string}    path
  * @param   {string}    route
- * @param   {string}    namespace
+ * @param   {string}   [namespace]
  * @returns {Area}
  */
-export function getArea (path, route = '/', namespace = '/') {
+export function getArea (path, route = '/', namespace = undefined) {
   // basic values
   const name = basename(path)
 
@@ -135,7 +135,7 @@ export function getArea (path, route = '/', namespace = '/') {
  * @param   {string}   [namespace]
  * @returns {Area|undefined}
  */
-export function getExternal (src, route = '/external', namespace = '/external') {
+export function getExternal (src, route = '/external', namespace = undefined) {
   // get route
   route = Namespace.resolve('/', route)
 

@@ -17,6 +17,7 @@ import { tryFile } from '../utils/fs.js'
  * @property  {string}    path
  * @property  {string}    component
  * @property  {Route[]}   children
+ * @property  {*}        [options]
  */
 
 /**
@@ -184,7 +185,13 @@ export function getRoutes (areas, options, depth = 0) {
       // routes are configured
       if (configPath) {
         const config = require(configPath)
-        routes = clone(config.routes)
+        if (Array.isArray(config.routes)) {
+          routes = clone(config.routes)
+        }
+        else {
+          console.warn(`[ AREAS ] Area "${area.name}" routes must be an Array`)
+          continue
+        }
       }
 
       // otherwise, have nuxt create them
