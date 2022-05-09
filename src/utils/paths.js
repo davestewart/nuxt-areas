@@ -1,10 +1,10 @@
 import Path, { basename, dirname, resolve } from 'upath'
 
 /**
- * Aliases the absolute path
+ * Converts an absolute path to an aliased path
  *
- * @param   {string}    path
- * @param   {string}   [prefix]
+ * @param   {string}    path      An absolute file path
+ * @param   {string}   [prefix]   The alias prefix to use; defaults to '~'
  * @return  {string}
  */
 export function getAliasedPath (path = '', prefix = '~') {
@@ -15,8 +15,8 @@ export function getAliasedPath (path = '', prefix = '~') {
  * Path comparison function which places index.* first
  * @usage   paths.sort(sortPaths)
  *
- * @param   {string}  a
- * @param   {string}  b
+ * @param   {string}  a     An absolute path
+ * @param   {string}  b     An absolute path
  * @returns {number}
  */
 export function sortPaths (a, b) {
