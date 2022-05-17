@@ -39,7 +39,7 @@ const nuxtModule = function (options) {
   // areas
   // ---------------------------------------------------------------------------------------------------------------------
 
-  // get areas
+  // get areas (excluding app, as that is handled separately)
   const areas = getAreas(ABS_BASE_PATH)
     .filter(area => area.path !== ABS_APP_PATH)
 

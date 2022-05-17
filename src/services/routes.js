@@ -34,9 +34,9 @@ import { tryFile } from '../utils/fs.js'
 /**
  * Create routes using Nuxt's own createRoutes() utility
  *
- * @param   {string}          areaPath  The area folder to scan for pages
- * @param   {RoutesOptions}   options   Options needed to build routes config
- * @return  {Route[]}                   An array of Route definitions
+ * @param   {string}          areaPath      The area folder to scan for pages
+ * @param   {RoutesOptions}   options       Options needed to build routes config
+ * @return  {Route[]}                       An array of Route definitions
  */
 function createRoutes (areaPath, options) {
   // @see https://github.com/nuxt/nuxt.js/blob/dev/packages/builder/src/builder.js#L43
@@ -156,9 +156,9 @@ function finishRoutes (routes, areaPath, routePrefix = '', options) {
  * - if an area config file exists, it is processed
  * - if one doesn't exist, the folders are scanned
  *
- * @param   {Area[]}          areas     An array of areas to process
- * @param   {RoutesOptions}   options   Options needed to build routes config
- * @param   {number}          depth     The traversal depth
+ * @param   {Area[]}          areas         An array of areas to process
+ * @param   {RoutesOptions}   options       Options needed to build routes config
+ * @param   {number}          depth         The traversal depth
  * @return  {Route[]}
  */
 export function getRoutes (areas, options, depth = 0) {

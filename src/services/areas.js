@@ -11,36 +11,28 @@ import * as Namespace from '../utils/namespace.js'
  * Area definition
  *
  * @typedef   {object}    Area
- * @property  {string}    name          The name (folder or package name) of the area
- * @property  {string}    path          The absolute folder path of the area
- * @property  {object}   [config]       An optional configuration if one is found
- * @property  {string}   [route]        An optional route prefix if folder is a group
- * @property  {string}   [namespace]    An optional namespace prefix if folder is a group
- * @property  {Area[]}   [areas]        An optional array of areas if the folder is a group
+ * @property  {string}    name            The name (folder or package name) of the area
+ * @property  {string}    path            The absolute folder path of the area
+ * @property  {object}   [configFile]     An optional configuration file if one is found
+ * @property  {string}   [route]          An optional route prefix if folder is a group
+ * @property  {string}   [namespace]      An optional namespace prefix if folder is a group
+ * @property  {Area[]}   [areas]          An optional array of nested areas if the folder is a group
  */
 
 // ---------------------------------------------------------------------------------------------------------------------
 // functions
 // ---------------------------------------------------------------------------------------------------------------------
 
-export function getAreasConfigFiles (areas) {
-  return areas.reduce((paths, area) => {
-    if (area.configFile) {
-      paths.push(area.path + '/' + area.configFile)
-    }
-    if (area.areas) {
-      paths.push(...getAreasConfigFiles(area.areas))
-    }
-    return paths
-  }, [])
-}
-
 /**
- * Get all area files
+ * Gets all Area definitions for a given path
  *
- * @param   {string}  path
- * @param   {string}  route
- * @param   {string}  namespace
+ * Note this function is called to get root-level areas, but is also called recursively
+ * from getArea() to get nested areas where a target folder doesn't contain a pages folder,
+ * routes file, or areas config file
+ *
+ * @param   {string}    path          The path to a folder containing area sub-folders
+ * @param   {string}    route         The base route for any pages
+ * @param   {string}    namespace     The base namespace for any stores
  * @returns {Area[]}
  */
 export function getAreas (path, route = '/', namespace = '/') {
@@ -68,14 +60,14 @@ export function getAreas (path, route = '/', namespace = '/') {
 }
 
 /**
- * Gets a single Area
+ * Gets a single Area definition
  *
- * @param   {string}    path
- * @param   {string}    route
- * @param   {string}   [namespace]
- * @returns {Area}
+ * @param   {string}    path          The folder path of a single area
+ * @param   {string}    route         The route prefix to use for the pages of that area
+ * @param   {string}   [namespace]    The store namespace prefix to use for stores of that area
+ * @returns {Area}                    An Area configuration object
  */
-export function getArea (path, route = '/', namespace = undefined) {
+export function getArea (path, route = '/', namespace = '/') {
   // basic values
   const name = basename(path)
 
@@ -108,6 +100,11 @@ export function getArea (path, route = '/', namespace = undefined) {
 
   // area
   const areas = getAreas(path, route, namespace)
+
+  /**
+   * Area definition
+   * @type {Area}
+   */
   const area = {
     name,
     route,
@@ -128,26 +125,34 @@ export function getArea (path, route = '/', namespace = undefined) {
 }
 
 /**
- * Gets an Area from a folder or package
+ * Gets a so-called "external" Area from a folder or package
  *
- * @param   {string}    src
- * @param   {string}   [route]
- * @param   {string}   [namespace]
- * @returns {Area|undefined}
+ * @param   {string}    src           The src file path to the area's folder, or an installed package name
+ * @param   {string}   [route]        The route the area's pages should be accessible under
+ * @param   {string}   [namespace]    The namespace the area's store files should install to
+ * @returns {Area|undefined}          An Area definition
  */
-export function getExternal (src, route = '/external', namespace = undefined) {
+export function getExternal (src, route = '/external', namespace = '/') {
   // get route
   route = Namespace.resolve('/', route)
 
   // variables
   let path = src
 
-  // check for folder
+  // check for folder (./, ../, ~/ or @/)
   if (/^[.\/\\~@]/.test(src)) {
-    // fix webpack aliases
+    // if path is a common src/ aliase (~/ or @/)
     const rxAlias = /^[~@]\//
     if (rxAlias.test(path)) {
       path = path.replace(rxAlias, './')
+    }
+
+    // otherwise, check for namespaced module (@...)
+    else if (path.startsWith('@')) {
+      const area = getModule(src, route, namespace)
+      if (area) {
+        return area
+      }
     }
 
     // resolve absolute path
@@ -157,13 +162,11 @@ export function getExternal (src, route = '/external', namespace = undefined) {
     }
   }
 
-  // check for module
+  // check for non-namespaced module
   else {
     path = tryModule(src)
     if (path) {
-      const area = getArea(path, route, namespace)
-      area.name = src
-      return area
+      return getModule(src, route, namespace)
     }
   }
 
@@ -172,10 +175,28 @@ export function getExternal (src, route = '/external', namespace = undefined) {
 }
 
 /**
+ * Attempts to load an Area from node modules
+ *
+ * @param   {string}    src           The src file path to the area's folder, or an installed package name
+ * @param   {string}   [route]        The route the area's pages should be accessible under
+ * @param   {string}   [namespace]    The namespace the area's store files should install to
+ * @returns {Area|undefined}          An Area definition
+ */
+function getModule (src, route, namespace) {
+  const path = tryModule(src)
+  if (path) {
+    const area = getArea(path, route, namespace)
+    area.name = src
+    return area
+  }
+}
+
+/**
  * Reads a configuration file with error trapping
  *
- * @param   {string}    path
- * @returns {object}
+ * @internal
+ * @param   {string}    path          The filepath of the config file
+ * @returns {object}                  The data in the config file
  */
 export function getConfig (path) {
   try {
@@ -184,4 +205,23 @@ export function getConfig (path) {
   catch (err) {
     console.warn(`[ AREAS ] There was a problem reading Area config "${path}". The error is: ${err.message}`)
   }
+}
+
+/**
+ * Utility function to collate all Area config files, so they can be watched
+ *
+ * @internal
+ * @param   {Area[]}      areas       An array of Area definitions
+ * @returns {string[]}                An array of Area config file paths
+ */
+export function getAreasConfigFiles (areas) {
+  return areas.reduce((paths, area) => {
+    if (area.configFile) {
+      paths.push(area.path + '/' + area.configFile)
+    }
+    if (area.areas) {
+      paths.push(...getAreasConfigFiles(area.areas))
+    }
+    return paths
+  }, [])
 }

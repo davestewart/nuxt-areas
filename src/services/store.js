@@ -43,6 +43,10 @@ export function globStores (path) {
 }
 
 /**
+ * Get all stores for all areas
+ *
+ * Note that areas may contain nested areas, so this function may be called recursively
+ *
  * @param   {Area[]}    areas         An array of areas to process
  * @returns {Store[]}                 An array of paths
  */
