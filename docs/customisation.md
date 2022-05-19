@@ -2,7 +2,7 @@
 
 ## Routes
 
-> Configure custom routing using JavaScript
+> Break out of Nuxt's file-based routing
 
 Areas allows you to break out of filesystem based routing by adding a `routes.js` (or `.ts`) file.
 
@@ -53,7 +53,7 @@ export const routes = [
 
 ## Nested areas
 
-> Group routes and namespaces under subfolders
+> Group multiple areas within a parent area
 
 #### Add a subfolder
 
@@ -122,6 +122,8 @@ Note:
 - don't overcomplicate things – simpler is better!
 
 ## External areas
+
+> Include 3rd-party areas from folders or packages
 
 Areas makes it possible to add area folders from *external* locations, such as folders, GitHub repos or NPM packages.
 

@@ -127,6 +127,15 @@ export function getArea (path, route = '/', namespace = '/') {
 /**
  * Gets a so-called "external" Area from a folder or package
  *
+ * Getting an external area has a few issues that need to be handled:
+ *
+ * - an external area could be a folder (./), alias (~/ @/), package (name) or scoped package (@name)
+ * - in order to resolve packages, we need to use require.resolve() which works on files not folders
+ * - alias only requires the path to a folder, so we need to account for this discrepancy
+ * - @ aliases and scoped packages could be confused, so we need to determine intention based on existence
+ *
+ * Thus, we need to check for paths in a somewhat unorthadox manner
+ *
  * @param   {string}    src           The src file path to the area's folder, or an installed package name
  * @param   {string}   [route]        The route the area's pages should be accessible under
  * @param   {string}   [namespace]    The namespace the area's store files should install to

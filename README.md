@@ -49,10 +49,11 @@ You can even [add areas](./docs/customisation.md#external-areas) from external s
 
 ## Next steps
 
-Full documentation is available at:
+Docs:
 
-- https://github.com/davestewart/nuxt-areas/tree/main/docs
+- [Nuxt Areas docs](https://github.com/davestewart/nuxt-areas/tree/main/docs)
 
-To see what a working Nuxt Areas site look like, check out the demo:
-
-- https://github.com/davestewart/nuxt-areas-demo-vue2
+Demo:
+ 
+- [Interactive demo on StackBlitz](https://stackblitz.com/github/davestewart/nuxt-areas-demo-vue2?file=areas%2Fapp%2Fpages%2Findex.vue)
+- [Source code on GitHub](https://github.com/davestewart/nuxt-areas-demo-vue2)

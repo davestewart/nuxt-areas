@@ -12,24 +12,29 @@
   Install Nuxt Areas
 
 - [**Folders**](./folders.md)
-  - [Area content](./folders.md#area-content)<br>
-    Set up areas Areas folders work
+
+  - [Area root](./folders.md#area-root)<br>
+    Set up areas' root folder
+  - [Areas content](./folders.md#areas-content)<br>
+    Group related files within individual areas
   - [App content](./folders.md#app-content)<br>
-    Moving root folders to areas
+    Move root-level content to a special "app" area
 
 - [**Customisation**](./customisation.md)
+
   - [Routes](./customisation.md#routes)<br>
     Break out of Nuxt's file-based routing
   - [Nested areas](./customisation.md#nested-areas)<br>
-    Nest multiple areas within a parent folder
+    Group multiple areas within a parent area
   - [External areas](./customisation.md#external-areas)<br>
-    Include additional areas from outside of your areas folder 
+    Include 3rd-party areas from folders or packages 
 
 - **[Advanced](./advanced.md)**
+
   - [Config](./advanced.md#debugging)<br>
-    Configuration options
+    Full list of Areas' configuration options
   - [Debugging](./advanced.md#debugging)<br>
-    Help with debugging your setup
-  - [Logo](./advanced.md#logo)
-    What's with the triangle/eye thing!?
+    Help debugging Areas when things don't work
+  - [Logo](./advanced.md#logo)<br>
+    What's with the eye!?
 

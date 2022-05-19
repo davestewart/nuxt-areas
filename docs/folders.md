@@ -2,7 +2,7 @@
 
 ## Area root
 
-> Set up individual folders with closely-related content 
+> Set up areas' root folder
 
 To get started, create a new folder called `/areas` in the root of your Nuxt project, then create some initial area folders within:
 
@@ -15,9 +15,11 @@ To get started, create a new folder called `/areas` in the root of your Nuxt pro
 
 Into these folders you will create or migrate `pages`, `stores`, `components`, etc.
 
-## Area content
+## Areas content
 
-### Requrements
+> Group related files within individual areas
+
+### Requirements
 
 All area folders:
 
@@ -103,7 +105,7 @@ If unsure, move one file at a time and test the routes, then move on to the next
 
 ## App content
 
-> Move lingering application content to a special "app" area
+> Move root-level content to a special "app" area
 
 Whether you are creating or converting content to areas subfolders, you may have noticed some lingering content in the root:
 

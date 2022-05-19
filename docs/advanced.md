@@ -84,7 +84,7 @@ const config = {
 
 ## Debugging
 
-> Help to debug Areas when Nuxt can't find paths and dies
+> Help debugging Areas when things don't work
 
 If things at any point don't work, for example you're experimenting with areas subfolders configuration, you can dump every setting, option and configuration that Areas uses or generates, to disk so you can get an idea of what is going on beneath the hood.
 
@@ -129,7 +129,7 @@ If you want to know what Nuxt Areas is doing and how it is doing it, take a look
 
 ## Logo
 
-> What's with the logo!?
+> What's with the eye!?
 
 If you're wondering what the logo is all about, it is the [Eye of Providence](https://en.wikipedia.org/wiki/Eye_of_Providence), or "all-seeing eye".
 
